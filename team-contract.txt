@@ -60,3 +60,5 @@ Do you need consensus (100% approval of all team members) before making a decisi
     It depends on the decision - certain details of implementations, if reasonably minute, could be decisions that can pass with no consensus. However, significant changes to the implementations on the main branch of the project should be approved by consensus. All in all, more often than not, consensus is absolutely necessary.
 What will you do if one of you fixates on a particular idea?
     We will sit down to discuss said idea together, and vow to be willing to make compromises if the team majority decides against one of our ideas.
+
+Diego Suarez, Emma Zheng, Samuel Manolis
