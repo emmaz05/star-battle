@@ -5,6 +5,8 @@ import assert from "assert";
 export type Cell = {
     row: number;
     col: number;
+    regionId: number;
+    state: CellState;
 }
 
 // Define CellState as the two possible states a cell may assume
@@ -13,95 +15,25 @@ export enum CellState {
     Star
 }
 
-
-/**
- * An immutable data type used to represent the regions of a
- * Star Battle Puzzle
- */
-class Region {
-    // Abstraction function:
-    //  - AF(cells) = the region that contains all cells in cells
-    //                and no others.
-    // Representation invariant:
-    //  - this.cells[i] !== this.cells[j] for all 0 <= i, j < this.cells.length
-    //  (in the loose sense pf !== meaning the two positions are unique)
-    // Safety from representation expousre:
-    //  - All methods return immutable types or copies of mutable type
-    //  - The one field in the rep is never reassigned or modified
-
-
-    /**
-     * Creates a new Region.
-     * 
-     * @param cells all the positions that correspond to this region,
-     * where cells are given by their row-col positions with respect to
-     * the a Puzzle grid. Must also have no repeatingc cells.
-     */
-    public constructor(
-        private readonly cells: Array<Cell>
-    ) {
-        this.checkRep();
-    }
-
-    /**
-     * Check the representation invariant.
-     */
-    private checkRep(): void {
-        throw new Error("Not implemented yet!");
-    }
-
-    /**
-     * Check if the region contains the specified cell coordinates.
-     * 
-     * @param row the row index
-     * @param col the column index
-     * @returns true if this region contins a cell with position (row, col),
-     * false otherwise
-     */
-    public containsCell(row: number, col: number): boolean {
-        for (const cell of this.cells) {
-            if (cell.row === row && cell.col === col) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Gets all the cells in this region
-     * 
-     * @returns 
-     */
-    public allCells(): Array<Cell> {
-        return [...this.cells];
-    }
-}
-
-
-
 /**
  * An immutable data type used to represent a Star Battle
  * Puzzle game.
  */
 export class Puzzle { 
 
-    private readonly grid: Array<CellState> = [];
-
 
     /**
      * Creates a new Star Battle Puzzle.
      * 
-     * @param height the height of the puzzle grid; must be a non=negative integer
-     * @param width the width of the puzzle grid; must be a non=negative integer
-     * @param regions an array of all the regions in this puzzle, such that
-     * each cell within all region is part of exactly one region.
-     * @param starCells the row-col coordinates of all cells containing a star.
+     * @param height the height of the puzzle grid; a non-negative integer
+     * @param width the height of the puzzle grid; a non-negative integer
+     * @param cells all the cells in the Puzzle grid. Must be such that
+     * cells.length = height * width
      */
     public constructor(
         public readonly height: number,
         public readonly width: number,
-        private readonly regions: Array<Region>,
-        private readonly starCells: Array<Cell>
+        private readonly cells: Array<Cell>
     ) {
         throw new Error("Not implemented yet!");
     }
@@ -195,7 +127,7 @@ export class Puzzle {
      * @returs the true if the state of cell (row, col) is empty,
      * false otherwise
      */
-    public isCellEmpty(row: number, col: number): CellState {
+    public isCellEmpty(row: number, col: number): boolean {
         throw new Error("Not implemented yet!");
     }
     
