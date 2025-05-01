@@ -9,7 +9,7 @@ export class Client {
     //      true
     // Safety from Representation Exposure:
     //      TO-DO
-
+    
 
     private currentPuzzle: Puzzle = new Puzzle();
 
