@@ -1,5 +1,4 @@
 import assert from 'assert';
-import { Puzzle } from './puzzle.js';
 
 /**
  * Tests for the Puzzle abstract data type
