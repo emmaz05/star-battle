@@ -1,4 +1,4 @@
-import { State, Puzzle } from './puzzle.js';
+import { CellState, Puzzle } from './puzzle.js';
 
 /**
  * Mutable Client ADT to manage puzzle state and operations
@@ -12,7 +12,7 @@ export class Client {
     //      TO-DO
     
 
-    private currentState: Puzzle = new Puzzle();
+    // private currentState: Puzzle = new Puzzle();
 
     /**
      * Creates a new client for the game.
