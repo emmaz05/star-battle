@@ -56,9 +56,9 @@ export class Puzzle {
         assert(this.grid.length === this.height * this.width, "The amount of cells in grid does not match dimensions.");
 
         // Check that the cells of the grid list follow row-major order 
-        for (let i = 0; i < this.grid.length; i++) {
-            const ithCell: Cell = this.grid[i] ?? assert.fail(`Could not get cell at index ${i}`);
-            const [expectedRow, expectedCol] = this.indexToCoords(i);
+        for (let cellIndex = 0; cellIndex < this.grid.length; cellIndex++) {
+            const ithCell: Cell = this.grid[cellIndex] ?? assert.fail(`Could not get cell at index ${cellIndex}`);
+            const [expectedRow, expectedCol] = this.indexToCoords(cellIndex);
             assert(ithCell.row === expectedRow, `Row-major order not followd by row index of cell (${ithCell.row}, ${ithCell.col})`);
             assert(ithCell.col === expectedCol, `Row-major order not followd by column index of cell (${ithCell.row}, ${ithCell.col})`);
         }
@@ -326,7 +326,7 @@ export class Puzzle {
         
         // Check all regions have 2 stars
         for (const regionId of this.regions.keys()) {
-            if (this.starsInRow(regionId) !== 2) {
+            if (this.starsInRegion(regionId) !== 2) {
                 return false;
             }
         }
