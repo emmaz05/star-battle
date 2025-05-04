@@ -59,6 +59,7 @@ export class Puzzle {
         for (let cellIndex = 0; cellIndex < this.grid.length; cellIndex++) {
             const ithCell: Cell = this.grid[cellIndex] ?? assert.fail(`Could not get cell at index ${cellIndex}`);
             const [expectedRow, expectedCol] = this.indexToCoords(cellIndex);
+            // console.log(`Cell (${ithCell.row}, ${ithCell.col}) at index ${cellIndex} should be (${expectedRow}, ${expectedCol})`);
             assert(ithCell.row === expectedRow, `Row-major order not followd by row index of cell (${ithCell.row}, ${ithCell.col})`);
             assert(ithCell.col === expectedCol, `Row-major order not followd by column index of cell (${ithCell.row}, ${ithCell.col})`);
         }
@@ -208,9 +209,10 @@ export class Puzzle {
      */
     private indexToCoords(index: number): [number, number] {
         return [
-            Math.floor(this.height / index),
-            this.width % index
+            Math.floor(index / this.width),
+            index % this.width
         ]
+
     }
 
     /**
@@ -266,6 +268,11 @@ export class Puzzle {
      * false otherwise
      */
     public isEmptyAt(row: number, col: number): boolean {
+        const rowOutOfBounds = row <0 || row >= this.height
+        const colOutOfBounds = col < 0 || col >= this.width
+        if (rowOutOfBounds || colOutOfBounds) {
+            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+        }
         const cell: Cell = this.getCellAt(row, col);
         return cell.state === CellState.Empty;
     }
@@ -282,6 +289,12 @@ export class Puzzle {
      * false otherwise
      */
     public hasStarAt(row: number, col: number): boolean {
+        const rowOutOfBounds = row <0 || row >= this.height
+        const colOutOfBounds = col < 0 || col >= this.width
+        if (rowOutOfBounds || colOutOfBounds) {
+            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+        }
+
         const cell: Cell = this.getCellAt(row, col);
         return cell.state === CellState.Star;
     }
@@ -298,6 +311,12 @@ export class Puzzle {
      * false otherwise
      */
     public getCellAt(row: number, col: number): Cell {
+        const rowOutOfBounds = row <0 || row >= this.height
+        const colOutOfBounds = col < 0 || col >= this.width
+        if (rowOutOfBounds || colOutOfBounds) {
+            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+        }
+
         const cellIndex = this.coordsToIndex(row, col);
         return this.grid[cellIndex] ?? assert.fail(`Could not get cell (${row}, ${col}) at index ${cellIndex}.`);
     }
@@ -333,6 +352,23 @@ export class Puzzle {
 
         // Must be solved if all rows, columns, and regions have 
         return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public toString(): string {
+        let stringRep = ""
+        for(let i = 0; i < this.grid.length; i++) {
+            const cell: Cell = this.grid[i] ?? assert.fail(`Could not get cell at index ${i}`);
+
+            if (cell.state === CellState.Empty) {
+                stringRep += ` ${cell.row}, ${cell.col} `;
+            } else {
+                stringRep += `|${cell.row}, ${cell.col}|`;
+            }
+        }
+        return stringRep;
     }
 
 }

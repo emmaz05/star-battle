@@ -108,16 +108,19 @@ describe('Puzzle: isEmptyAt()', function () {
     it('Covers: invalid row index', function() { 
         
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        
         try {
             const isEmpty = puzzle.isEmptyAt(3, 1);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
 
         try {
             const isEmpty = puzzle.isEmptyAt(-4, 1);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
 
     });
@@ -127,14 +130,16 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         try {
             const isEmpty = puzzle.isEmptyAt(0, 4);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
 
         try {
             const isEmpty = puzzle.isEmptyAt(2, -2);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
     });
 
@@ -180,14 +185,16 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         try {
             const isEmpty = puzzle.hasStarAt(3, 1);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
 
         try {
             const isEmpty = puzzle.hasStarAt(-4, 1);
-        } catch (e) {
             assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
         }
 
     });
@@ -197,14 +204,16 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         try {
             const isEmpty = puzzle.hasStarAt(0, 4);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(true);
         }
 
         try {
             const isEmpty = puzzle.hasStarAt(2, -2);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(true);
         }
     });
 
@@ -237,7 +246,6 @@ describe('Puzzle: hasStarAt()', function () {
     });
 })
 
-
 describe('Puzzle: addStar()', function () {
     //
     // Partitions:
@@ -247,19 +255,69 @@ describe('Puzzle: addStar()', function () {
 
 
     it('Covers: invalid row index', function() { 
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
+        try {
+            const newPuzzle: Puzzle = puzzle.addStar(7, 2);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const newPuzzle: Puzzle = puzzle.addStar(-2, 0);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
     });
 
     it('Covers: invalid column index', function() { 
-        
+
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        try {
+            const newPuzzle: Puzzle = puzzle.addStar(0, 3);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const newPuzzle: Puzzle = puzzle.addStar(2, -1);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+
     });
 
     it('Covers: valid coords, cell IS empty', function() { 
-        
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for (const cell of SMALL_GRID) {
+            if (cell.state === CellState.Empty) {
+                const newPuzzle: Puzzle = puzzle.addStar(cell.row, cell.col);
+                assert(
+                    newPuzzle.hasStarAt(cell.row, cell.col), 
+                    `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
+                )
+            }
+        }
     });
 
     it('Covers: valid coords, cell IS NOT empty', function() { 
-        
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for (const cell of SMALL_GRID) {
+            if (cell.state === CellState.Star) {
+                try {
+                    const newPuzzle: Puzzle = puzzle.addStar(cell.row, cell.col);
+                    assert(false, `Expected error when adding a star to filled cell (${cell.row}, ${cell.col}) was not thrown.`);
+                } catch (e) {
+                    assert(true);
+                }
+                
+            }
+        }
     });
 })
 
@@ -271,19 +329,68 @@ describe('Puzzle: removeStar()', function () {
     //  - cell at (row, col): is empty, has a star
 
     it('Covers: invalid row index', function() { 
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
+        try {
+            const newPuzzle: Puzzle = puzzle.removeStar(7, 2);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const newPuzzle: Puzzle = puzzle.removeStar(-2, 0);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
     });
 
     it('Covers: invalid column index', function() { 
-        
+
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        try {
+            const newPuzzle: Puzzle = puzzle.removeStar(0, 3);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const newPuzzle: Puzzle = puzzle.removeStar(2, -1);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+
     });
 
     it('Covers: valid coords, cell IS empty', function() { 
-        
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for (const cell of SMALL_GRID) {
+            if (cell.state === CellState.Empty) {
+                try {
+                    const newPuzzle: Puzzle = puzzle.removeStar(cell.row, cell.col);
+                    assert(false, `Expected error when removing a star from empty cell (${cell.row}, ${cell.col}) was not thrown.`);
+                } catch (e) {
+                    assert(true);
+                }
+            }
+        }
     });
 
     it('Covers: valid coords, cell IS NOT empty', function() { 
-        
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for (const cell of SMALL_GRID) {
+            if (cell.state === CellState.Star) {
+                const newPuzzle: Puzzle = puzzle.removeStar(cell.row, cell.col);
+                assert(
+                    newPuzzle.isEmptyAt(cell.row, cell.col), 
+                    `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
+                )
+            }
+        }
     });
 })
 
