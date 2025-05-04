@@ -1,19 +1,19 @@
 import assert from 'assert';
-import { Puzzle, Cell, CellSate } from '../src/puzzle';
-import { describe, it } from 'mocha';
+import { Puzzle, Cell, CellState } from '../src/puzzle.js';
+// import { describe, it } from 'mocha';
 
 
 
 const SMALL_GRID: Array<Cell> = [
-    {row: 0, col: 0, regionId: 0, state: CellSate.Empty},
-    {row: 0, col: 1, regionId: 1, state: CellSate.Star},
-    {row: 0, col: 2, regionId: 1, state: CellSate.Empty},
-    {row: 1, col: 0, regionId: 0, state: CellSate.Star},//
-    {row: 1, col: 1, regionId: 2, state: CellSate.Empty},//
-    {row: 1, col: 2, regionId: 1, state: CellSate.Empty},//
-    {row: 2, col: 0, regionId: 2, state: CellSate.Empty},
-    {row: 2, col: 1, regionId: 2, state: CellSate.Empty},
-    {row: 2, col: 2, regionId: 1, state: CellSate.Star}
+    {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+    {row: 0, col: 1, regionId: 1, state: CellState.Star},
+    {row: 0, col: 2, regionId: 1, state: CellState.Empty},
+    {row: 1, col: 0, regionId: 0, state: CellState.Star}, //
+    {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
+    {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
+    {row: 2, col: 0, regionId: 2, state: CellState.Empty},
+    {row: 2, col: 1, regionId: 2, state: CellState.Empty},
+    {row: 2, col: 2, regionId: 1, state: CellState.Star}
 ]
 
 
@@ -74,10 +74,10 @@ describe('Puzzle: constructor()', function () {
     it('Covers: cells do not span the grid', function() { 
         try {
             const puzzle: Puzzle = new Puzzle(1, 2, [
-                {row: 0, col: 0, regionId: 0, state: CellSate.Empty},
-                {row: 0, col: 0, regionId: 1, state: CellSate.Star},
-                {row: 1, col: 0, regionId: 0, state: CellSate.Empty},
-                {row: 1, col: 1, regionId: 1, state: CellSate.Star}
+                {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+                {row: 0, col: 0, regionId: 1, state: CellState.Star},
+                {row: 1, col: 0, regionId: 0, state: CellState.Empty},
+                {row: 1, col: 1, regionId: 1, state: CellState.Star}
             ]);
             assert(false, "Expected error when cell coordinates do not span the whole grid was not thrown.");
         } catch (e) {
@@ -143,7 +143,7 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellSate.Empty) {
+            if (cell.state === CellState.Empty) {
                 assert(
                     puzzle.isEmptyAt(cell.row, cell.col), 
                     `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
@@ -157,7 +157,7 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
 
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellSate.Star) {
+            if (cell.state === CellState.Star) {
                 assert(
                     !puzzle.isEmptyAt(cell.row, cell.col), 
                     `Expected false for star cell (${cell.row}, ${cell.col}) but got true.`
@@ -213,7 +213,7 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellSate.Star) {
+            if (cell.state === CellState.Star) {
                 assert(
                     puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected true for star cell (${cell.row}, ${cell.col}) but got false.`
@@ -227,7 +227,7 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
 
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellSate.Empty) {
+            if (cell.state === CellState.Empty) {
                 assert(
                     !puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected false for empty cell (${cell.row}, ${cell.col}) but got true.`
