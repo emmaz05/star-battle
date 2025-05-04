@@ -1,5 +1,6 @@
 import assert from 'assert';
-import { Puzzle, Cell, CellSate } from 'src/puzzle.js'
+import { Puzzle, Cell, CellSate } from '../src/puzzle';
+import { describe, it } from 'mocha';
 
 
 

@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { CellState, Puzzle } from './puzzle.js';
 
 /**
@@ -11,8 +12,9 @@ export class Client {
     // Safety from Representation Exposure:
     //      TO-DO
     
+    private currentPuzzle: Puzzle | undefined = undefined
 
-    // private currentState: Puzzle = new Puzzle();
+    // private currentPuzzle: Puzzle = new Puzzle();
 
     /**
      * Creates a new client for the game.
@@ -48,10 +50,11 @@ export class Client {
      * @throws Error if the position is out of bounds, or if a star is already there
      */
     public addStar(row: number, col: number): void{
-        if (row >= this.currentState.size || row < 0) throw new Error('row is out of bounds');
-        if (col >= this.currentState.size || col < 0) throw new Error('column is out of bounds');
-        if (this.currentState.getState(row, col) === State.Star) throw new Error('star already exists here');
-        this.currentState = this.currentState.addStar(row, col);
+        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
+        if (row >= this.currentPuzzle.height || row < 0) throw new Error('row is out of bounds');
+        if (col >= this.currentPuzzle.width || col < 0) throw new Error('column is out of bounds');
+        if (this.currentPuzzle.hasStarAt(row, col)) throw new Error('star already exists here');
+        this.currentPuzzle = this.currentPuzzle.addStar(row, col);
     }
 
     /**
@@ -61,11 +64,12 @@ export class Client {
      * @param col column of star to remove
      * @throws Error if the position is out of bounds, or if no star is there
      */
-    public removeStar(row: number, col: number): Puzzle {
-        if (row >= this.currentState.size || row < 0) throw new Error('row is out of bounds');
-        if (col >= this.currentState.size || col < 0) throw new Error('column is out of bounds');
-        if (this.currentState.getState(row, col) !== State.Star) throw new Error('no star to remove');
-        this.currentState = this.currentState.removeStar(row, col);
+    public removeStar(row: number, col: number): void {
+        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
+        if (row >= this.currentPuzzle.height || row < 0) throw new Error('row is out of bounds');
+        if (col >= this.currentPuzzle.width || col < 0) throw new Error('column is out of bounds');
+        if (this.currentPuzzle.isEmptyAt(row, col)) throw new Error('star already exists here');
+        this.currentPuzzle = this.currentPuzzle.removeStar(row, col);
     }
 
     /**
@@ -81,7 +85,8 @@ export class Client {
      * @returns true if current puzzle state is solved
      */
     public declareSolved(): boolean {
-        return this.currentState.isSolved();
+        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
+        return this.currentPuzzle.isSolved();
     }
 
 }
