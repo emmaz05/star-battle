@@ -2,24 +2,43 @@
 import assert from "assert";
 
 // Define Cell as row-col coordinates for a cell on the puzzle grid
+
+/**
+ * An immutable data type used to represent a cell in the Star Battle grid.
+ * 
+ * Abstraction Function:
+ *  AF(row, col, regionId, state) = the cell at position (row, col) in the grid,
+ *      belonging to region regionId with current state state (emoty or starred)
+ * Representation Invariant:
+ *    - true
+ * Safety from Representation Exposure:
+ *    - all fields are unrreassiganble
+ */
 export type Cell = {
-    row: number;
-    col: number;
-    regionId: number;
-    state: CellState;
+    readonly row: number;
+    readonly col: number;
+    readonly regionId: number;
+    readonly state: CellState;
 }
 
 // Define CellState as the two possible states a cell may assume
-export enum CellState {
-    Empty,
-    Star
-}
+export enum CellState { Empty, Star }
 
 /**
  * An immutable data type used to represent a Star Battle
  * Puzzle game.
  */
 export class Puzzle { 
+    // Abstraction Function:
+    //  AF(grid, regions) = the Star Battle puzzle thta has a grid of 
+    //      puzzle cells stored in grid in row-major order, and regions 
+    //      detailed by a a region id to list of cells mapping regions 
+    // Representation Invariant:
+    //      - this.height and this.width are positive integers
+    //      - this.grid.length = this.height * this.width
+    //      - the cells in this.grid are in row-major order
+    // Safety from Representation Exposure:
+    // all fields are private, and all methods return immutable data types
 
     private grid: Array<Cell> = [];
     private readonly regions: Map<number, Array<Cell>> = new Map();
@@ -42,6 +61,10 @@ export class Puzzle {
         this.fillRegions(cells);
         this.checkRep();
     }
+
+    // ================================================
+    // =============== PRIVATE METHODS ================
+    // ================================================
 
     /**
      * Checks the representation invariant.
@@ -66,11 +89,14 @@ export class Puzzle {
     }
 
     /**
-     * Fills this puzzle's grid with the cells provided
+     * Fills this puzzle's grid with the cells provided, following
+     * row-major order.
      * 
-     * @param cells the list of cells to fill the grid with
+     * @param cells the list of cells to fill the grid with. Must
+     * have length equal to this.height * this.width
      */
     private fillGrid(cells: Array<Cell>): void {
+        // Go over all cells, get their index into this.grid, and fill it
         for (const cell of cells) {
             const cellIndex = this.coordsToIndex(cell.row, cell.col);
             this.grid[cellIndex] = cell;
@@ -84,12 +110,16 @@ export class Puzzle {
      * @param cells all the cells in the puzzle grid.
      */
     private fillRegions(cells: Array<Cell>): void {
+        // Go over all cells provided
         for (const cell of cells) {
-            const reg = cell.regionId;
-            if (this.regions.has(reg)) {
-                this.regions.set(reg, [cell]);
+            const regionId = cell.regionId;
+
+            // If this is an existing region ID, add cell to corresponding list
+            if (this.regions.has(regionId)) {
+                this.regions.get(regionId)?.push(cell);
+            // Else, create a new entry for it
             } else {
-                this.regions.get(reg)?.push(cell);
+                this.regions.set(regionId, [cell]);
             }
         }
     }
@@ -102,12 +132,16 @@ export class Puzzle {
      * @returns the number of stars in the row-th row
      */
     private starsInRow(row: number): number {
+        // Get the indexes of the row to tally up
         const startIndex = this.width * row;
         const endIndex = (this.width + 1) * row;
 
         let total = 0;
+        // Go over all the cells in the row
         for (let i = startIndex; i < endIndex; i++) {
             const [row, col] = this.indexToCoords(i);
+
+            // And add to the total if it has a star
             if (this.hasStarAt(row, col)) {
                 total++;
             }
@@ -124,12 +158,16 @@ export class Puzzle {
      * @returns the number of stars in the col-th column
      */
     private starsInColumn(col: number): number {
+        // Get the indexes of the column to tally up
         const startIndex = col;
         const endIndex = col + this.width * (this.height - 1);
 
         let total = 0;
+        // Go over all the cells in the column
         for (let i = startIndex; i < endIndex; i += this.width) {
             const [row, col] = this.indexToCoords(i);
+
+            // And add to the total if it has a star
             if (this.hasStarAt(row, col)) {
                 total++;
             }
@@ -138,7 +176,7 @@ export class Puzzle {
         return total;
     }
 
-    /**
+    /**s
      * Gets the total number of stars in the same region.
      * 
      * @param regionId the region ID of the region to check
@@ -147,10 +185,14 @@ export class Puzzle {
      * cell at position (seedRow, seedCol)
      */
     private starsInRegion(regionId: number): number {
+        // Get all the cells in the region
         const cellsInRegion: Array<Cell> = this.regions.get(regionId) ?? assert.fail("Invalid region ID");
 
         let total = 0;
+        // Go over all such cells
         for(const cell of cellsInRegion) {
+
+            // And add to the total if it has a star
             if (cell.state === CellState.Star) {
                 total++;
             }
@@ -170,18 +212,23 @@ export class Puzzle {
      * @param newState the new state of the changed cell
      * @returns 
      */
-    private changeCellState(row: number, col: number, newState: CellState) {
+    private changeCellState(row: number, col: number, newState: CellState): Puzzle {
+        // Check if the coordinates are out of bounds
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+
+        // Get the chosen cell and create the new cell
         const chosenCell: Cell = this.getCellAt(row, col);
         const newCell: Cell =  {
-            row: chosenCell.row,
-            col: chosenCell.col,
-            regionId: chosenCell.regionId,
-            state: newState
+            row: chosenCell.row,            // row same as the old cell
+            col: chosenCell.col,            // col same as the old cell
+            regionId: chosenCell.regionId,  // regionId same as the old cell
+            state: newState                 // SET STATE TO DESIRED STATE
         }
 
+        // Finally, create a new puzzle with the new cell by copying over the cell grid
         const newCells: Array<Cell> = [...this.grid];
-        const removedIndex = this.coordsToIndex(row, col);
-        newCells[removedIndex] = newCell;
+        const chosenIndex = this.coordsToIndex(row, col);
+        newCells[chosenIndex] = newCell;
         return new Puzzle(this.height, this.width, newCells);
     }
 
@@ -197,6 +244,9 @@ export class Puzzle {
      * @returns the index into this.grid which corresponds to cell (row, col)
      */
     private coordsToIndex(row: number, col: number): number {
+        // Check if the coordinates are out of bounds
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+
         return this.height * row + col;
     }
     
@@ -214,6 +264,23 @@ export class Puzzle {
         ]
 
     }
+
+    /**
+     * Checks if the givren coordinates are out of the puzzle bounds 
+     * 
+     * @param row the row index of coordinates
+     * @param col the column index of the coordinates
+     * @returns true if the coordinates are out of bounds, false otherwise
+     */
+    private coordsOutOfBounds(row: number, col: number): boolean {
+        const rowOutOfBounds = row < 0 || row >= this.height;
+        const colOutOfBounds = col < 0 || col >= this.width;
+        return rowOutOfBounds || colOutOfBounds;
+    }
+
+    // ================================================
+    // ================ PUBLIC METHODS ================
+    // ================================================
 
     /**
      * Creates a new puzzle identical to this puzzle, with an extra star.
@@ -268,11 +335,9 @@ export class Puzzle {
      * false otherwise
      */
     public isEmptyAt(row: number, col: number): boolean {
-        const rowOutOfBounds = row <0 || row >= this.height
-        const colOutOfBounds = col < 0 || col >= this.width
-        if (rowOutOfBounds || colOutOfBounds) {
-            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
-        }
+        // Check if the coordinates are out of bounds
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+    
         const cell: Cell = this.getCellAt(row, col);
         return cell.state === CellState.Empty;
     }
@@ -289,11 +354,8 @@ export class Puzzle {
      * false otherwise
      */
     public hasStarAt(row: number, col: number): boolean {
-        const rowOutOfBounds = row <0 || row >= this.height
-        const colOutOfBounds = col < 0 || col >= this.width
-        if (rowOutOfBounds || colOutOfBounds) {
-            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
-        }
+        // Check if the coordinates are out of bounds
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
 
         const cell: Cell = this.getCellAt(row, col);
         return cell.state === CellState.Star;
@@ -311,16 +373,28 @@ export class Puzzle {
      * false otherwise
      */
     public getCellAt(row: number, col: number): Cell {
-        const rowOutOfBounds = row <0 || row >= this.height
-        const colOutOfBounds = col < 0 || col >= this.width
-        if (rowOutOfBounds || colOutOfBounds) {
-            throw new Error(`Invalid cell coordinates (${row}, ${col}) out of bounds.`);
-        }
+        // Check if the coordinates are out of bounds
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
 
         const cellIndex = this.coordsToIndex(row, col);
         return this.grid[cellIndex] ?? assert.fail(`Could not get cell (${row}, ${col}) at index ${cellIndex}.`);
     }
     
+    /**
+     * Returns a copy of the region Id to cells mapping.
+     * 
+     * @returns a map mapping region IDs to a list of all the cells
+     * within that region
+     */
+    public getRegions(): Map<number, Array<Cell>> {
+        const copyOfRegions: Map<number, Array<Cell>> = new Map();
+        for (const [regionId, cells] of this.regions.entries()) {
+            copyOfRegions.set(regionId, [...cells]);
+        }
+        return copyOfRegions;
+    }
+
+
     /**
      * Checks if the puzzle has been solved, according to the rules
      * of using 2n stars with exactly 2 per column, row and region.
@@ -352,23 +426,6 @@ export class Puzzle {
 
         // Must be solved if all rows, columns, and regions have 
         return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public toString(): string {
-        let stringRep = ""
-        for(let i = 0; i < this.grid.length; i++) {
-            const cell: Cell = this.grid[i] ?? assert.fail(`Could not get cell at index ${i}`);
-
-            if (cell.state === CellState.Empty) {
-                stringRep += ` ${cell.row}, ${cell.col} `;
-            } else {
-                stringRep += `|${cell.row}, ${cell.col}|`;
-            }
-        }
-        return stringRep;
     }
 
 }

@@ -394,4 +394,91 @@ describe('Puzzle: removeStar()', function () {
     });
 })
 
+describe('Puzzle: getCellAt()', function() {
+    //
+    // Partitions:
+    //  - row: valid, out of puzzle bounds
+    //  - col: valid, out of puzzle bounds
 
+    it('Covers: invalid row index', function() { 
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        
+        try {
+            const cell: Cell = puzzle.getCellAt(4, 2);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const cell: Cell = puzzle.getCellAt(-1, 1);
+            assert(false, "Expected error when row index is not in bounds was not thrown.")
+        } catch (e) {
+            assert(true);
+        }
+
+    });
+
+    it('Covers: invalid column index', function() { 
+
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        try {
+            const cell: Cell = puzzle.getCellAt(0, 5);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+
+        try {
+            const cell: Cell = puzzle.getCellAt(0, -5);
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
+        } catch (e) {
+            assert(true);
+        }
+    });
+
+    it('Covers: valid coordinates', function() { 
+        const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for (const cell of SMALL_GRID) {
+            const returnedCell: Cell = puzzle.getCellAt(cell.row, cell.col);
+            assert.deepEqual(
+                returnedCell,
+                cell,
+                `Expected ${JSON.stringify(cell)} but got ${JSON.stringify(returnedCell)}`
+            )
+        }
+    });
+
+})
+
+describe('Puzzle: isSolved()', function () {
+    //
+    // Partitions:
+    //  - on outputs: true, false
+    //  - FOR FALSE OUTPUTS, FALSE BECAUSE:
+    //      - no stars in the grid
+    //      - row with not exactly 2 stars
+    //      - column with not exactly 2 stars
+    //      - region with not exactly 2 stars
+
+    it('Covers: expected true', function() { 
+        throw new Error('Not implemented');
+    });
+
+    it('Covers: expected false - empty grid', function() { 
+        throw new Error('Not implemented');
+    });
+
+    it('Covers: expected false - unsolved row', function() { 
+        throw new Error('Not implemented');
+    });
+
+    it('Covers: expected false - unsolved column', function() { 
+        throw new Error('Not implemented');
+    });
+
+    it('Covers: expected false - unsolved region', function() { 
+        throw new Error('Not implemented');
+    });
+})
+    
