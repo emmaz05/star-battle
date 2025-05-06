@@ -2,7 +2,7 @@
   "include": [
     "./src/*.ts",
     "./test/*.ts"
-  ],
+, "src/coloring/*.ts"  ],
   
   "compilerOptions": {
     "strict": true,
