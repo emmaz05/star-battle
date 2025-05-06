@@ -1,28 +1,25 @@
-import assert from 'assert';
 import { CellState, Puzzle } from './puzzle.js';
-
+import { drawBoard } from './drawing.js';
 /**
  * Mutable Client ADT to manage puzzle state and operations
  */
 export class Client {
     // Abstraction Function:
-    //      AF(currentPuzzle, id) = the Client with ID id that is working on puzzle currentPuzzle
+    //      AF(currentState) = a client in the progress of solving a puzzle with puzzle state currentState
     // Representation Invariant:
     //      true
     // Safety from Representation Exposure:
-    //      TO-DO
+    //      The puzzle ADT is immutable so allowing outside access to currentState is safe from rep exposure
     
-    private currentPuzzle: Puzzle | undefined = undefined
 
-    // private currentPuzzle: Puzzle = new Puzzle();
+    private currentState: Puzzle;
 
     /**
      * Creates a new client for the game.
-     * @param id client id
+     * @param blankPuzzle empty puzzle board
      */
-    public constructor(
-        private readonly id: string
-    ) {
+    public constructor(blankPuzzle: Puzzle) {
+        this.currentState = blankPuzzle;
         this.checkRep();
     }
 
@@ -34,12 +31,12 @@ export class Client {
     }
 
     /**
-     * Request a blank puzzle to draw on.
-     * 
-     * @returns a new blank puzzle
+     * Request a blank puzzle for the client to work on
+     * @param blankPuzzle blank puzzle state 
      */
-    public request(): Puzzle {
-        throw new Error("you want to implement me sooooooo bad ;)");
+    public request(blankPuzzle: Puzzle): void{
+        // should check if its actually blank??
+        this.currentState = blankPuzzle;
     }
 
     /**
@@ -49,12 +46,11 @@ export class Client {
      * @param col column of new star
      * @throws Error if the position is out of bounds, or if a star is already there
      */
-    public addStar(row: number, col: number): void{
-        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
-        if (row >= this.currentPuzzle.height || row < 0) throw new Error('row is out of bounds');
-        if (col >= this.currentPuzzle.width || col < 0) throw new Error('column is out of bounds');
-        if (this.currentPuzzle.hasStarAt(row, col)) throw new Error('star already exists here');
-        this.currentPuzzle = this.currentPuzzle.addStar(row, col);
+    public addStar(row: number, col: number): void {
+        if (row >= this.currentState.height || row < 0) throw new Error('row is out of bounds');
+        if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
+        if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
+        this.currentState = this.currentState.addStar(row, col);
     }
 
     /**
@@ -65,28 +61,24 @@ export class Client {
      * @throws Error if the position is out of bounds, or if no star is there
      */
     public removeStar(row: number, col: number): void {
-        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
-        if (row >= this.currentPuzzle.height || row < 0) throw new Error('row is out of bounds');
-        if (col >= this.currentPuzzle.width || col < 0) throw new Error('column is out of bounds');
-        if (this.currentPuzzle.isEmptyAt(row, col)) throw new Error('star already exists here');
-        this.currentPuzzle = this.currentPuzzle.removeStar(row, col);
+        if (row >= this.currentState.height || row < 0) throw new Error('row is out of bounds');
+        if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
+        if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
+        this.currentState = this.currentState.removeStar(row, col);
     }
 
     /**
-     * Displays the given puzzle on the screen.
-     * 
-     * @param puzzle the puzzle to display.
+     * Displays the current puzzle state.
      */
-    public displayPuzzle(puzzle: Puzzle): void {
-        throw new Error("you want to implement me sooooooo bad ;)");
+    public displayPuzzle(): void {
+        drawBoard(this.currentState);
     }
 
     /**
      * @returns true if current puzzle state is solved
      */
     public declareSolved(): boolean {
-        assert(this.currentPuzzle !== undefined, "currentPuzzle is undefined");
-        return this.currentPuzzle.isSolved();
+        return this.currentState.isSolved();
     }
 
 }
