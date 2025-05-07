@@ -54,11 +54,13 @@ export function drawBox(canvas: HTMLCanvasElement, x: number, y: number, color: 
 }
 /**
  * draws a circle in the middle of the specified square on the grid
- * @param context 2d canvas context 
+ * @param canvas canvas to draw on
  * @param row row to draw on
  * @param col column to draw on
  */
-export function drawStar(context: CanvasRenderingContext2D, row: number, col: number): void {
+export function drawStar(canvas: HTMLCanvasElement, row: number, col: number): void {
+    const context = canvas.getContext('2d');
+    assert(context !== null, 'unable to get canvas drawing context');
     const x = col * CELL_SIZE + CELL_SIZE / 2;
     const y = row * CELL_SIZE + CELL_SIZE / 2;
     context.fillStyle = 'black';
@@ -68,12 +70,14 @@ export function drawStar(context: CanvasRenderingContext2D, row: number, col: nu
 }
 /**
  * draws a circle in the middle of the specified square on the grid
- * @param context 2d canvas context 
+ * @param canvas canvas to draw on
  * @param row row to draw on
  * @param col column to draw on
  * @param board current state of board
  */
-export function eraseStar(context: CanvasRenderingContext2D, row: number, col: number, board: Puzzle): void {
+export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, board: Puzzle): void {
+    const context = canvas.getContext('2d');
+    assert(context !== null, 'unable to get canvas drawing context');
     const x = col * CELL_SIZE + CELL_SIZE / 2;
     const y = row * CELL_SIZE + CELL_SIZE / 2;
     const cell = board.getCellAt(row, col);
@@ -92,7 +96,7 @@ export function eraseStar(context: CanvasRenderingContext2D, row: number, col: n
  * @param outputArea HTML element that should display the message
  * @param message message to display
  */
-function printOutput(outputArea: HTMLElement, message: string): void {
+export function printOutput(outputArea: HTMLElement, message: string): void {
     // append the message to the output area
     outputArea.innerText += message + '\n';
 
@@ -104,16 +108,17 @@ function printOutput(outputArea: HTMLElement, message: string): void {
 
 /**
  * Draw the black puzzle given the board state
+ * @param canvas canvas to draw on
  * @param board current state of the puzzle
  */
-export function drawBlankBoard(board: Puzzle): void {
+export function drawBlankBoard(canvas: HTMLCanvasElement, board: Puzzle): void {
 
-    // output area for printing
-    const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    // canvas for drawing
-    const canvas: HTMLElement|null = document.getElementById('canvas');
-    if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-    else{
+    // // output area for printing
+    // const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
+    // // canvas for drawing
+    // const canvas: HTMLElement|null = document.getElementById('canvas');
+    // if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
+    // else{
     const OFFSET_X = 8;
     const OFFSET_Y = 8;
     const regions: Map<number, Array<Cell>> = board.getRegions();
@@ -139,10 +144,10 @@ export function drawBlankBoard(board: Puzzle): void {
         }
         colorIdx++;
       });
-    }
+    // }
 
     // add initial instructions to the output area
-    printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
+    // printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 }
 
 // main();
