@@ -67,15 +67,16 @@ export class Client {
     // }
 
     /**
-     * Updates the current puzzle state by adding a star at a specified position
+     * Updates the current puzzle state by adding a star at a specified position, 0-indexed
      * 
      * @param row row of new star
      * @param col column of new star
-     * @throws Error if the position is out of bounds, or if a star is already there
+     * @throws Error if the position is out of bounds or a non-integer, or if a star is already there
      */
     public addStar(row: number, col: number): void {
         if (row >= this.currentState.height || row < 0) throw new Error('row is out of bounds');
         if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
+        if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
         this.currentState = this.currentState.addStar(row, col);
         drawStar(this.canvas, row, col);
@@ -84,15 +85,16 @@ export class Client {
     }
 
     /**
-     * Updates the current puzzle state by removing a star at a specified position
+     * Updates the current puzzle state by removing a star at a specified position, 0-indexed
      * 
      * @param row row of star to remove
      * @param col column of star to remove
-     * @throws Error if the position is out of bounds, or if no star is there
+     * @throws Error if the position is out of bounds or a non-integer, or if no star is there
      */
     public removeStar(row: number, col: number): void {
         if (row >= this.currentState.height || row < 0) throw new Error('row is out of bounds');
         if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
+        if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
         this.currentState = this.currentState.removeStar(row, col);
         eraseStar(this.canvas, row, col, this.currentState);
@@ -109,6 +111,13 @@ export class Client {
             printOutput(this.outputArea, 'Puzzle solved! >:)');
         }
         return solved;
+    }
+
+    /**
+     * @returns the current puzzle state
+     */
+    public getState(): Puzzle {
+        return this.currentState;
     }
 
 }
