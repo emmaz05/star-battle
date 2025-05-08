@@ -155,3 +155,43 @@ class WebServer {
 }
 
 await main();
+
+/**
+ * 
+ async function sendRequest(): Promise<void> {
+     try {
+       const res = await fetch('http://localhost:8789');
+       
+     //   if (!res.ok) throw new Error(`HTTP ${res.status}`);
+     //   const data = await res.text();      // matches the JSON we now send
+     //   alert(data);
+     } catch (err) {
+       alert('Fetch failed: ' + err);
+     }
+   }
+ // await sendRequest();
+ 
+ async function main(): Promise<void> {
+ 
+     // output area for printing
+     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
+     // canvas for drawing
+     const canvas: HTMLElement|null = document.getElementById('canvas');
+     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
+     alert("yogurt");
+     // // await draw(canvas);
+     alert("yo");
+ 
+     // when the user clicks on the drawing canvas...
+     // canvas.addEventListener('click',  (event: MouseEvent) => {
+     //     drawBox(canvas, event.offsetX, event.offsetY);
+     // });
+     await sendRequest();
+     
+     // add initial instructions to the output area
+     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
+ }
+ 
+ const PORT = 8789;
+ main();
+ */
