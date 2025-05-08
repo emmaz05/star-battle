@@ -12,27 +12,7 @@ import { Puzzle, Cell, CellState } from './puzzle.js';
 //NEWLINE ::= "\r"? "\n"
 
 
-const grammar = `@skip whitespace {
-    puzzleFile ::= number "x" number newline (region newline)+;
-    region ::= positionList space "|" space positionList;
-    positionList ::= position (space position)*
-    position ::= number "," number;
-    space ::= " "+;
-}
-number ::= [0-9]+;
-newline ::= "\r"? "\n";
-whitespace ::= [ \t\r\n]+;`;
 
-enum PuzzleGrammar {
-    PuzzleFile,
-    Region,
-    PositionList,
-    Position,
-    Space,
-    Number,
-    Newline,
-    Whitespace
-}
 
 export const parser: Parser<PuzzleGrammar> = compile(grammar, PuzzleGrammar, PuzzleGrammar.PuzzleFile);
 
@@ -49,6 +29,7 @@ export function parsePuzzle(input: string): Puzzle {
     
     const parseTree: ParseTree<PuzzleGrammar> = parser.parse(input);
 
+   
     // Get puzzle dimensions
     const dims = parseTree.childrenByName(PuzzleGrammar.Number).map(child => parseInt(child.text));
     if (dims.length !== 2) throw new Error("Invalid puzzle dimensions");

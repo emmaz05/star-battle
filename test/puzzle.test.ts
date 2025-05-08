@@ -463,14 +463,14 @@ describe('Puzzle: isSolved()', function () {
     //      - column with not exactly 2 stars
     //      - region with not exactly 2 stars
 
-    it.only('Covers: expected true', async function() { 
-        const input = await fs.promises.readFile('./puzzles/kd-1-1-1.starb', 'utf8');
-        console.log(input);
+    // it('Covers: expected true', async function() { 
+    //     const input = await fs.promises.readFile('./puzzles/kd-1-1-1.starb', 'utf8');
+    //     console.log(input);
 
-        const puzzle: Puzzle = parsePuzzle(input);
-        // console.log(puzzle.getRegions());
+    //     const puzzle: Puzzle = parsePuzzle(input);
+    //     // console.log(puzzle.getRegions());
 
-    });
+    // });
 
     it('Covers: expected false - empty grid', function() { 
         throw new Error('Not implemented');

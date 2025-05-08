@@ -9,11 +9,10 @@ import assert from 'node:assert';
 const BOX_SIZE = 16;
 const CELL_BORDER = 0.2;
 const CELL_SIZE = 40; 
-const STAR_RADIUS = 12;
+const STAR_RADIUS = 6;
 
 // mapping of regions to their colors
 const regionColors = new Map<number, Color>();
-
 
 /**
  * Draw a black square filled with a random color.
