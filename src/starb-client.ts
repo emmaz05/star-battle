@@ -17,6 +17,7 @@ import { Server } from 'node:http';
 import { parsePuzzle } from './parser.js';
 import { drawPuzzle, cellCoords } from './drawing.js';
 
+const PUZZLE: string = `kd-1-1-1`;
 
 /**
  * Puzzle to request and play.
@@ -112,9 +113,6 @@ export class Client {
      */
     public checkSolved(): boolean {
         const solved = this.currentState.isSolved();
-        // if (solved) {
-        //     printOutput(this.outputArea, 'Puzzle solved! >:)');
-        // }
         return solved;
     }
 
@@ -196,7 +194,7 @@ const blank = parsePuzzle(served);
 
         const cell = client.getState().getCellAt(row, col);
 
-        if (cell.currentState === CellState.Empty) {
+        if (cell.state === CellState.Empty) {
             client.addStar(row, col);
             drawStar(canvas, row, col, client.getState());
         } else {

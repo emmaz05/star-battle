@@ -252,7 +252,7 @@ export function drawPuzzle(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
     for (let row = 0; row < puzzle.height; row += 1) {
         for (let col = 0; col < puzzle.width; col += 1) {
             const cell = puzzle.getCellAt(row, col);
-            if (cell.currentState === CellState.Star) {
+            if (cell.state === CellState.Star) {
                 drawStar(canvas, row, col, puzzle);
             }
         }

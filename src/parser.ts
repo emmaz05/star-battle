@@ -76,8 +76,7 @@ export function parsePuzzle(input: string): Puzzle {
                 row: parsedRow, 
                 col: parsedCol, 
                 regionId: regionIdx, 
-                currentState: CellState.Empty,  // All new cells start off as empty
-                expectedState: CellState.Star   // But these cells are expected to have a star for the solution
+                state: CellState.Empty,  // All new cells start off as empty
             };
             cells.push(cell);
         }
@@ -94,8 +93,7 @@ export function parsePuzzle(input: string): Puzzle {
                 row: parsedRow, 
                 col: parsedCol, 
                 regionId: regionIdx, 
-                currentState: CellState.Empty,  // All new cells start off as empty
-                expectedState: CellState.Empty  // And these cells are expected to stay empty
+                state: CellState.Empty,  // All new cells start off as empty
             };
             cells.push(cell);
         }
