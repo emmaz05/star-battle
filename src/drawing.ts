@@ -152,7 +152,7 @@ export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, pu
         context.fillRect(-CELL_WIDTH / 2, -CELL_HEIGHT / 2, CELL_WIDTH, CELL_HEIGHT);
 
         context.lineWidth = CELL_BORDER;
-        context.strokeStyle = color;
+        context.strokeStyle = 'black';
         context.strokeRect(-CELL_WIDTH / 2, -CELL_HEIGHT / 2, CELL_WIDTH, CELL_HEIGHT);
 
         context.restore();
@@ -163,7 +163,14 @@ export function drawPuzzle(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
     const regions: Map<number, Array<Cell>> = puzzle.getRegions();
     const dhue = 360 / regions.size;
 
-    for ()
+    for (const [regionId, cells] of regions.entries()) {
+        const hue = regionId * dhue;
+        const color = hueToRGB(hue);
+        
+        for (const cell of cells) {
+            drawCell(canvas, cell.row, cell.col, puzzle, color);
+        }
+    }
 
 }
 
@@ -187,7 +194,7 @@ export function hueToRGB(hue: number): string {
     else               [r, g, b] = [c, 0, x];
 
     // Convert to 0–255 and return as CSS rgb() string
-    return `rgb(${Math.round((r + m) * 255)}, ${Math.round((g + m) * 255)}, ${Math.round((b + m) * 255)})`;
+    return colorToHexColor([Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)]);
 }
 
 
