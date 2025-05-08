@@ -80,7 +80,7 @@ class WebServer {
             .send(blankBoard);
 
             // close server after puzzle is sent
-            this.stop();
+            // this.stop();
         });
 
         this.app.use(express.static('public/'));
