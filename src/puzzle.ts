@@ -18,7 +18,8 @@ export type Cell = {
     readonly row: number;
     readonly col: number;
     readonly regionId: number;
-    readonly state: CellState;
+    readonly currentState: CellState;
+    readonly expectedState: CellState;
 }
 
 // Define CellState as the two possible states a cell may assume
@@ -193,7 +194,7 @@ export class Puzzle {
         for(const cell of cellsInRegion) {
 
             // And add to the total if it has a star
-            if (cell.state === CellState.Star) {
+            if (cell.currentState === CellState.Star) {
                 total++;
             }
         }
@@ -219,10 +220,11 @@ export class Puzzle {
         // Get the chosen cell and create the new cell
         const chosenCell: Cell = this.getCellAt(row, col);
         const newCell: Cell =  {
-            row: chosenCell.row,            // row same as the old cell
-            col: chosenCell.col,            // col same as the old cell
-            regionId: chosenCell.regionId,  // regionId same as the old cell
-            state: newState                 // SET STATE TO DESIRED STATE
+            row: chosenCell.row,                    // row same as the old cell
+            col: chosenCell.col,                    // col same as the old cell
+            regionId: chosenCell.regionId,          // regionId same as the old cell
+            currentState: newState,                 // SET STATE TO DESIRED STATE
+            expectedState: chosenCell.expectedState // expected state same as the old cell
         }
 
         // Finally, create a new puzzle with the new cell by copying over the cell grid
@@ -339,7 +341,7 @@ export class Puzzle {
         assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
     
         const cell: Cell = this.getCellAt(row, col);
-        return cell.state === CellState.Empty;
+        return cell.currentState === CellState.Empty;
     }
 
     /**
@@ -358,7 +360,7 @@ export class Puzzle {
         assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
 
         const cell: Cell = this.getCellAt(row, col);
-        return cell.state === CellState.Star;
+        return cell.currentState === CellState.Star;
     }
 
     /**
@@ -402,29 +404,11 @@ export class Puzzle {
      * @returns true if the puzzle has been solved, false otherwise
      */
     public isSolved(): boolean {
-        
-        // Check all rows have 2 stars
-        for (let row = 0; row < this.height; row++) {
-            if (this.starsInRow(row) !== 2) {
+       for (const cell of this.grid) {
+            if (cell.currentState !== cell.expectedState) {
                 return false;
             }
         }
-
-        // Check all columns have 2 stars
-        for (let col = 0; col < this.height; col++) {
-            if (this.starsInColumn(col) !== 2) {
-                return false;
-            }
-        }
-        
-        // Check all regions have 2 stars
-        for (const regionId of this.regions.keys()) {
-            if (this.starsInRegion(regionId) !== 2) {
-                return false;
-            }
-        }
-
-        // Must be solved if all rows, columns, and regions have 
         return true;
     }
 

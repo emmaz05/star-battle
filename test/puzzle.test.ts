@@ -5,15 +5,15 @@ import { Puzzle, Cell, CellState } from '../src/puzzle.js';
 
 
 const SMALL_GRID: Array<Cell> = [
-    {row: 0, col: 0, regionId: 0, state: CellState.Empty},
-    {row: 0, col: 1, regionId: 1, state: CellState.Star},
-    {row: 0, col: 2, regionId: 1, state: CellState.Empty},
-    {row: 1, col: 0, regionId: 0, state: CellState.Star}, //
-    {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
-    {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
-    {row: 2, col: 0, regionId: 2, state: CellState.Empty},
-    {row: 2, col: 1, regionId: 2, state: CellState.Empty},
-    {row: 2, col: 2, regionId: 1, state: CellState.Star}
+    {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
+    {row: 0, col: 1, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty},
+    {row: 0, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
+    {row: 1, col: 0, regionId: 0, currentState: CellState.Star, expectedState: CellState.Empty}, //
+    {row: 1, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},//
+    {row: 1, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},//
+    {row: 2, col: 0, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+    {row: 2, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+    {row: 2, col: 2, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty}
 ]
 
 
@@ -74,10 +74,10 @@ describe('Puzzle: constructor()', function () {
     it('Covers: cells do not span the grid', function() { 
         try {
             const puzzle: Puzzle = new Puzzle(1, 2, [
-                {row: 0, col: 0, regionId: 0, state: CellState.Empty},
-                {row: 0, col: 0, regionId: 1, state: CellState.Star},
-                {row: 1, col: 0, regionId: 0, state: CellState.Empty},
-                {row: 1, col: 1, regionId: 1, state: CellState.Star}
+                {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
+                {row: 0, col: 0, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty},
+                {row: 1, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
+                {row: 1, col: 1, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty}
             ]);
             assert(false, "Expected error when cell coordinates do not span the whole grid was not thrown.");
         } catch (e) {
@@ -148,7 +148,7 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Empty) {
+            if (cell.currentState === CellState.Empty) {
                 assert(
                     puzzle.isEmptyAt(cell.row, cell.col), 
                     `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
@@ -162,7 +162,7 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
 
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Star) {
+            if (cell.currentState === CellState.Star) {
                 assert(
                     !puzzle.isEmptyAt(cell.row, cell.col), 
                     `Expected false for star cell (${cell.row}, ${cell.col}) but got true.`
@@ -222,7 +222,7 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Star) {
+            if (cell.currentState === CellState.Star) {
                 assert(
                     puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected true for star cell (${cell.row}, ${cell.col}) but got false.`
@@ -236,7 +236,7 @@ describe('Puzzle: hasStarAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
 
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Empty) {
+            if (cell.currentState === CellState.Empty) {
                 assert(
                     !puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected false for empty cell (${cell.row}, ${cell.col}) but got true.`
@@ -295,7 +295,7 @@ describe('Puzzle: addStar()', function () {
     it('Covers: valid coords, cell IS empty', function() { 
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Empty) {
+            if (cell.currentState === CellState.Empty) {
                 const newPuzzle: Puzzle = puzzle.addStar(cell.row, cell.col);
                 assert(
                     newPuzzle.hasStarAt(cell.row, cell.col), 
@@ -308,7 +308,7 @@ describe('Puzzle: addStar()', function () {
     it('Covers: valid coords, cell IS NOT empty', function() { 
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Star) {
+            if (cell.currentState === CellState.Star) {
                 try {
                     const newPuzzle: Puzzle = puzzle.addStar(cell.row, cell.col);
                     assert(false, `Expected error when adding a star to filled cell (${cell.row}, ${cell.col}) was not thrown.`);
@@ -369,7 +369,7 @@ describe('Puzzle: removeStar()', function () {
     it('Covers: valid coords, cell IS empty', function() { 
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Empty) {
+            if (cell.currentState === CellState.Empty) {
                 try {
                     const newPuzzle: Puzzle = puzzle.removeStar(cell.row, cell.col);
                     assert(false, `Expected error when removing a star from empty cell (${cell.row}, ${cell.col}) was not thrown.`);
@@ -383,7 +383,7 @@ describe('Puzzle: removeStar()', function () {
     it('Covers: valid coords, cell IS NOT empty', function() { 
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         for (const cell of SMALL_GRID) {
-            if (cell.state === CellState.Star) {
+            if (cell.currentState === CellState.Star) {
                 const newPuzzle: Puzzle = puzzle.removeStar(cell.row, cell.col);
                 assert(
                     newPuzzle.isEmptyAt(cell.row, cell.col), 
