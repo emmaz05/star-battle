@@ -12,8 +12,10 @@ import { CellState, Puzzle } from './puzzle.js';
 import { drawBlankBoard, drawStar, eraseStar, printOutput } from './drawing.js';
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import * as fs from 'fs';
+
 import { Server } from 'node:http';
+import { parsePuzzle } from './parser.js';
+import { drawPuzzle, cellCoords } from './drawing.js';
 
 
 /**
@@ -37,8 +39,8 @@ export class Client {
     
 
     private currentState: Puzzle;
-    private readonly outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    private readonly canvas: HTMLCanvasElement;
+    // private readonly outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
+    // private readonly canvas: HTMLCanvasElement;
 
     /**
      * Creates a new client for the game.
@@ -46,11 +48,11 @@ export class Client {
      */
     public constructor(blankPuzzle: Puzzle) {
         this.currentState = blankPuzzle;
-        const canvas = document.getElementById('canvas');
-        if (!(canvas instanceof HTMLCanvasElement)) throw new Error('missing drawing canvas');
-        this.canvas = canvas;
-        drawBlankBoard(this.canvas, this.currentState);
-        printOutput(this.outputArea, `Click on a square on the board to add and remove stars`);
+        // const canvas = document.getElementById('canvas');
+        // if (!(canvas instanceof HTMLCanvasElement)) throw new Error('missing drawing canvas');
+        // this.canvas = canvas;
+        // drawBlankBoard(this.canvas, this.currentState);
+        // printOutput(this.outputArea, `Click on a square on the board to add and remove stars`);
         this.checkRep();
     }
 
@@ -82,8 +84,8 @@ export class Client {
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
         this.currentState = this.currentState.addStar(row, col);
-        drawStar(this.canvas, row, col, this.currentState);
-        this.checkSolved();
+        // drawStar(this.canvas, row, col, this.currentState);
+        // this.checkSolved();
         
     }
 
@@ -101,7 +103,7 @@ export class Client {
         if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
         this.currentState = this.currentState.removeStar(row, col);
         // eraseStar(this.canvas, row, col, this.currentState);
-        this.checkSolved();
+        // this.checkSolved();
     }
 
     /**
@@ -141,25 +143,68 @@ async function sendRequest(): Promise<void> {
   }
 // await sendRequest();
 
-async function main(): Promise<void> {
+function main(): void {
 
     // output area for printing
     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
     // canvas for drawing
     const canvas: HTMLElement|null = document.getElementById('canvas');
     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-    alert("yogurt");
-    // // await draw(canvas);
-    alert("yo");
+    // alert("yogurt");
+    // // // await draw(canvas);
+    // alert("yo");
 
     // when the user clicks on the drawing canvas...
     // canvas.addEventListener('click',  (event: MouseEvent) => {
     //     drawBox(canvas, event.offsetX, event.offsetY);
     // });
-    await sendRequest();
+    // await sendRequest();
     
     // add initial instructions to the output area
+    // const input = fs.readFileSync('puzzles/kd-1-1-1.starb', 'utf-8');
+    // console.log(input);
+    const blank = parsePuzzle(`# Star Battle Puzzles by KrazyDad, Volume 6, Book 31, Number 6
+#  - higher book numbers should be more difficult!
+# https://krazydad.com/starbattle/sfiles/STAR_R2_10x10_v6_b31.pdf
+10x10
+1,1  3,1  | 2,1
+2,3  3,5  | 1,2 1,3 1,4 1,5 2,2 2,4 2,5
+1,6  2,8  | 1,7 1,8 1,9 1,10 2,9 2,10
+6,2  5,4  | 3,2 3,3 3,4 4,1 4,2 4,3 4,4 4,5 5,1 5,2 5,3 5,5 6,1 6,3 6,4 6,5 7,1 7,2 7,5 8,1 8,5 9,1 10,1
+5,6  4,8  | 2,6 2,7 3,6 3,7 3,8 3,9 4,6 4,7 4,9 5,7 6,6 6,7 6,8 7,6
+4,10 6,10 | 3,10 5,8 5,9 5,10 6,9 7,9 7,10 8,10 9,10 10,10
+7,4  8,2  | 7,3 8,3 8,4 9,2 10,2
+9,5  10,3 | 8,6 8,7 9,3 9,4 9,6 10,4 10,5
+7,7  8,9  | 7,8 8,8 9,8
+9,7  10,9 | 9,9 10,6 10,7 10,8
+
+`);
+    console.log(blank);
+    const client = new Client(blank);
+
     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
+    drawPuzzle(canvas, blank);
+    // // when the user clicks on the drawing canvas...
+
+    canvas.addEventListener('click', (event: MouseEvent) => {
+        // drawBox(canvas, event.offsetX, event.offsetY);
+        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, client.getState());
+        // alert(`row: ${row}, col: ${col}`);
+
+        const cell = client.getState().getCellAt(row, col);
+
+        if (cell.currentState === CellState.Empty) {
+            client.addStar(row, col);
+            drawStar(canvas, row, col, client.getState());
+        } else {
+            client.removeStar(row, col);
+            eraseStar(canvas, row, col, client.getState());
+        }
+        
+        if (client.checkSolved()) printOutput(outputArea, 'YOU HAVE JUST SOLVED THE PUZZLE. >:)))');
+        // eraseStar(canvas, row, col, puzzle);
+        // drawCell(canvas, row, col, puzzle);
+    });
 }
 
 const PORT = 8789;
