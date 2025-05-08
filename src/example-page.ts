@@ -123,14 +123,16 @@ async function main(): Promise<void> {
     const canvas: HTMLElement|null = document.getElementById('canvas');
     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
 
-    for (let row = 0; row < 3; row += 1) {
-        for (let col = 0; col < 3; col += 1) {
-            drawStar(canvas, row, col, puzzle);
-        }
-    }
+    drawPuzzle(canvas, puzzle);
+
+    // for (let row = 0; row < 10; row += 1) {
+    //     for (let col = 0; col < 10; col += 1) {
+    //         drawStar(canvas, row, col, puzzle);
+    //     }
+    // }
 
     // drawBlankBoard(canvas, puzzle);
-    drawPuzzle(canvas, puzzle);
+    
     // // when the user clicks on the drawing canvas...
 
     canvas.addEventListener('click', (event: MouseEvent) => {
@@ -138,16 +140,11 @@ async function main(): Promise<void> {
         const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
         // alert(`row: ${row}, col: ${col}`);
 
-        const cell = puzzle.getCellAt(row, col);
 
-        if (cell.currentState === CellState.Empty) {
-            drawStar(canvas, row, col, puzzle);
-        } else {
-            eraseStar(canvas, row, col, puzzle);
-        }
+        
         
         // drawCircle(canvas, row, col, "red");
-        // eraseStar(canvas, row, col, puzzle);
+        eraseStar(canvas, row, col, puzzle);
         // drawCell(canvas, row, col, puzzle);
     });
 
