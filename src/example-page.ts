@@ -137,4 +137,54 @@ function main(): void {
     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 }
 
+const PORT = 8789;
+
+/**
+ *
+ */
+// async function draw(canvas: HTMLCanvasElement ): Promise<void> {
+//     alert("gurt");
+// }
+
+// // alert('Response data:');
+// async function sendRequest(): Promise<void> {
+//     try {
+//         const response = await fetch(`/puzzle`, {
+//             method: 'GET', // or 'GET', 'PUT', 'DELETE'
+//         });
+        
+//         if (!response.ok) {
+//             alert("baboo!!");
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+//             // const data = await fs.promises.readFile("./puzzles/kd-1-1-1.starb", 'utf-8');
+//             // // drawBlankBoard(canvas, parsePuzzle(data));
+//             // alert(data);
+  
+//       alert('Response data: bababa');
+//       const data = response.json();
+//       alert('Response data: babooo' + data);
+//     } catch (error) {
+//         alert('Response data: bad' + error);
+//         console.error('Error sending request:', error);
+//     }
+// }
+async function sendRequest(): Promise<void> {
+    try {
+      const res = await fetch('http://localhost:8789/puzzle');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.text();      // matches the JSON we now send
+      alert(data);
+    } catch (err) {
+      alert('Fetch failed: ' + err);
+    }
+  }
+// try{
+// const data = await fs.promises.readFile("../puzzles/kd-1-1-1.starb", 'utf-8');
+// // drawBlankBoard(canvas, parsePuzzle(data));
+// alert(data);}
+// catch (err){
+//     alert(err);
+// }
+// await sendRequest(); 
 main();

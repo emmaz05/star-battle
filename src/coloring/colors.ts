@@ -145,18 +145,14 @@ export function interpolate(v0: number, v1: number, easing: (ti: number) => numb
 }
 
 /**
-* Converts an [R, G, B] array to a hex color string.
-* @param rgb Color of red, green, blue values (0–255)
-* @returns Hex color string like "#1a2b3c"
-*/
+ * Converts an [R, G, B] array to a hex color string.
+ *  @param rgb Color of red, green, blue values (0–255)
+ * @returns Hex color string like "#1a2b3c"
+ */
 export function colorToHexColor(rgb: Color): string {
- return (
-   "#" +
-   rgb
-     .map((c) => {
-       const hex = c.toString(16);
-       return hex.length === 1 ? "0" + hex : hex;
-     })
-     .join("")
+ return ("#" + rgb.map((color) => {
+       const hexVal = color.toString(16); // discoverd radix optional param from https://www.geeksforgeeks.org/typescript-tostring-function/
+       return hexVal.length === 1 ? "0" + hexVal : hexVal;
+     }).join("")
  );
 }
