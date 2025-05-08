@@ -136,10 +136,10 @@ export class Puzzle {
      * Must be a non-negative integer less than this.height
      * @returns the number of stars in the row-th row
      */
-    private starsInRow(row: number): number {
+    public starsInRow(row: number): number {
         // Get the indexes of the row to tally up
         const startIndex = this.width * row;
-        const endIndex = (this.width + 1) * row;
+        const endIndex = this.width * (row + 1);
 
         let total = 0;
         // Go over all the cells in the row
@@ -162,10 +162,10 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * @returns the number of stars in the col-th column
      */
-    private starsInColumn(col: number): number {
+    public starsInColumn(col: number): number {
         // Get the indexes of the column to tally up
         const startIndex = col;
-        const endIndex = col + this.width * (this.height - 1);
+        const endIndex = this.width * this.height
 
         let total = 0;
         // Go over all the cells in the column
@@ -189,7 +189,7 @@ export class Puzzle {
      * @returns the number of stars in the region containing
      * cell at position (seedRow, seedCol)
      */
-    private starsInRegion(regionId: number): number {
+    public starsInRegion(regionId: number): number {
         // Get all the cells in the region
         const cellsInRegion: Array<Cell> = this.regions.get(regionId) ?? assert.fail("Invalid region ID");
 
@@ -204,6 +204,26 @@ export class Puzzle {
         }
 
         return total;
+    }
+
+    private hasStarAdjacent(row: number, col: number): boolean {
+
+        // Go over all the cells in the 3x3 region around (row, col)
+        for (let drow = -1; drow <= 1; drow++) {
+            for (let dcol = -1; dcol <= 1; dcol++) {
+                // Skip the center cell
+                if (drow === 0 && dcol === 0) continue; 
+
+                // If the neighbor cell is in bounds and has a star, return true
+                const newRow = row + drow;
+                const newCol = col + dcol;
+                if (!this.coordsOutOfBounds(newRow, newCol) && this.hasStarAt(newRow, newCol)) {
+                    return true;
+                }
+            }
+        }
+        // No stars found in the 3x3 region
+        return false
     }
 
     /**
@@ -406,27 +426,31 @@ export class Puzzle {
      * @returns true if the puzzle has been solved, false otherwise
      */
     public isSolved(): boolean {
-    //    for (const cell of this.grid) {
-    //         if (cell.state !== cell.expectedState) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-
+    
+        // Check all rows have correct number of stars
         for (let row = 0; row < this.height; row++) {
             if (this.starsInRow(row) !== 2) {
                 return false;
             }
         }
 
+        // Check all columns have correct number of stars
         for (let col = 0; col < this.width; col++) {
             if (this.starsInColumn(col) !== 2) {
                 return false;
             }
         }
 
+        // Check all regions have correct number of stars
         for (const regionId of this.regions.keys()) {
             if (this.starsInRegion(regionId) !== 2) {
+                return false;
+            }
+        }
+
+        // Check that no two stars are adjacent
+        for (const cell of this.grid) {
+            if (cell.state === CellState.Star && this.hasStarAdjacent(cell.row, cell.col)) {
                 return false;
             }
         }
@@ -434,5 +458,25 @@ export class Puzzle {
         return true;
 
     }
+
+
+    public toString(): string {
+
+        const showRegions = false;
+        let cellRep: string | number = '-';
+
+        let str = `Puzzle ${this.height}x${this.width}:\n`;
+        for (let row = 0; row < this.height; row++) {
+            for (let col = 0; col < this.width; col++) {
+                const cell: Cell = this.getCellAt(row, col);
+                if (showRegions) cellRep = cell.regionId;
+                str += cell.state === CellState.Star ? `[${cellRep}]` : ` ${cellRep} `;
+            }
+            str += '\n';
+        }
+        return str;
+    }
+
+
 
 }

@@ -19,6 +19,60 @@ const SMALL_GRID: Array<Cell> = [
 ]
 
 
+
+function addStars(puzzle: Puzzle, positions: Array<[number, number]>): Puzzle {
+    for (const [row, col] of positions) {
+        puzzle = puzzle.addStar(row, col);
+    }
+    return puzzle;
+}
+
+function removeStars(puzzle: Puzzle, positions: Array<[number, number]>): Puzzle {
+    for (const [row, col] of positions) {
+        puzzle = puzzle.removeStar(row, col);
+    }
+    return puzzle;
+}
+
+
+const KD_1_1_1: Puzzle = parsePuzzle(`10x10
+1,2  1,5  | 1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5
+2,9  4,10 | 1,9 1,10 2,10 3,9 3,10 4,9 5,9 5,10 6,9 6,10 7,10 8,10
+3,2  3,4  | 3,3
+2,7  4,8  | 3,6 3,7 3,8
+6,1  9,1  | 3,1 4,1 4,2 4,3 4,4 5,1 5,2 5,3 6,2 7,1 7,2 8,1 8,2 8,3 8,4 8,5 8,6
+5,4  5,6  | 4,5 5,5 6,4 6,5 6,6
+6,8  8,7  | 4,6 4,7 5,7 5,8 6,7 7,6 7,7 7,8 8,8
+7,3  7,5  | 6,3 7,4
+8,9 10,10 | 7,9 9,9 9,10
+9,3  10,6 | 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9
+`);
+    
+const SOLVED_KD_1_1_1: Puzzle = addStars(KD_1_1_1, [
+    [0, 1],
+    [0, 4],
+    [1, 8],
+    [3, 9],
+    [2, 1],
+    [2, 3],
+    [1, 6],
+    [3, 7],
+    [5, 0],
+    [8, 0],
+    [4, 3],
+    [4, 5],
+    [5, 7],
+    [7, 6],
+    [6, 2],
+    [6, 4],
+    [7, 8],
+    [9, 9],
+    [8, 2],
+    [9, 5]
+]);
+
+
+
 /**
  * Tests for the Puzzle abstract data type
  */
@@ -461,23 +515,27 @@ describe('Puzzle: isSolved()', function () {
     //      - no stars in the grid
     //      - row with not exactly 2 stars
     //      - column with not exactly 2 stars
-    //      - region with not exactly 2 stars
+    //      - region with not exactly 2 star
+    //      - stars adjacent
 
-    // it('Covers: expected true', async function() { 
-    //     const input = await fs.promises.readFile('./puzzles/kd-1-1-1.starb', 'utf8');
-    //     console.log(input);
-
-    //     const puzzle: Puzzle = parsePuzzle(input);
-    //     // console.log(puzzle.getRegions());
-
-    // });
+    it('Covers: expected true', async function() { 
+        assert(SOLVED_KD_1_1_1.isSolved(), "Expected solved puzzle to be solved.");
+    });
 
     it('Covers: expected false - empty grid', function() { 
-        throw new Error('Not implemented');
+        assert(!KD_1_1_1.isSolved(), "Expected empty grid to be unsolved.");
     });
 
     it('Covers: expected false - unsolved row', function() { 
-        throw new Error('Not implemented');
+
+        console.log("KD_1_1_1", SOLVED_KD_1_1_1.toString());
+
+        const emptyRow: Puzzle = removeStars(SOLVED_KD_1_1_1, [[0, 1], [0, 4]]);
+        assert(!emptyRow.isSolved(), "Empty to row should mean puzzle is unsolved.");
+
+        const overflowingRow: Puzzle = addStars(SOLVED_KD_1_1_1, [[0, 0]]);
+        assert(!overflowingRow.isSolved(), "Row with too many stars should mean puzzle is unsolved.");
+
     });
 
     it('Covers: expected false - unsolved column', function() { 

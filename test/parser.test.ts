@@ -30,7 +30,7 @@ describe('Puzzle: constructor()', function () {
     //  - on cells: span the grid, do not span the grid
     //  - on cells.length: = width * height, != width * height
 
-    it.only('THIS IS FOR U EMMA', function() { 
+    it('THIS IS FOR U EMMA', function() { 
         const text = `10x10`
         const puzzle: Puzzle = parsePuzzle(text);
         console.log("OK");
