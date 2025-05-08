@@ -17,7 +17,8 @@ import { Server } from 'node:http';
 import { parsePuzzle } from './parser.js';
 import { drawPuzzle, cellCoords } from './drawing.js';
 
-const PUZZLE: string = `kd-1-1-1`;
+const PUZZLE = `kd-1-1-1`;
+const PORT = 8789;
 
 /**
  * Puzzle to request and play.
@@ -128,20 +129,27 @@ export class Client {
 
 // start client stuff
 
+/**
+ * Sends a request to the server for the text of a blank puzzle
+ * @returns the string representing the requested empty puzzle if possible, throws error otherwise
+ */
 async function sendRequest(): Promise<string> {
     try {
-      const res = await fetch('http://localhost:8789/puzzle');
+      const response = await fetch(`http://localhost:${PORT}/puzzle/${PUZZLE}`);
       
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.text();      // matches the JSON we now send
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.text();      // puzzle text data
       return data;
     } catch (err) {
       console.error('Fetch failed: ' + err);
-      return "failed";
+      throw new Error("Fetch failed: " + err);
     }
   }
-// await sendRequest();
 
+
+/**
+ * Entry point into client
+ */
 async function main(): Promise<void> {
 
     // output area for printing
@@ -149,44 +157,18 @@ async function main(): Promise<void> {
     // canvas for drawing
     const canvas: HTMLElement|null = document.getElementById('canvas');
     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-    // alert("yogurt");
-    // // // await draw(canvas);
-    // alert("yo");
 
-    // when the user clicks on the drawing canvas...
-    // canvas.addEventListener('click',  (event: MouseEvent) => {
-    //     drawBox(canvas, event.offsetX, event.offsetY);
-    // });
-    // await sendRequest();
-    
-    // add initial instructions to the output area
-    // const input = fs.readFileSync('puzzles/kd-1-1-1.starb', 'utf-8');
-    // console.log(input);
-    const blank1 = parsePuzzle(`# Star Battle Puzzles by KrazyDad, Volume 6, Book 31, Number 6
-#  - higher book numbers should be more difficult!
-# https://krazydad.com/starbattle/sfiles/STAR_R2_10x10_v6_b31.pdf
-10x10
-1,1  3,1  | 2,1
-2,3  3,5  | 1,2 1,3 1,4 1,5 2,2 2,4 2,5
-1,6  2,8  | 1,7 1,8 1,9 1,10 2,9 2,10
-6,2  5,4  | 3,2 3,3 3,4 4,1 4,2 4,3 4,4 4,5 5,1 5,2 5,3 5,5 6,1 6,3 6,4 6,5 7,1 7,2 7,5 8,1 8,5 9,1 10,1
-5,6  4,8  | 2,6 2,7 3,6 3,7 3,8 3,9 4,6 4,7 4,9 5,7 6,6 6,7 6,8 7,6
-4,10 6,10 | 3,10 5,8 5,9 5,10 6,9 7,9 7,10 8,10 9,10 10,10
-7,4  8,2  | 7,3 8,3 8,4 9,2 10,2
-9,5  10,3 | 8,6 8,7 9,3 9,4 9,6 10,4 10,5
-7,7  8,9  | 7,8 8,8 9,8
-9,7  10,9 | 9,9 10,6 10,7 10,8
-
-`);
-const served = await sendRequest();
-const blank = parsePuzzle(served);
-    console.log(blank);
-    const client = new Client(blank);
+    // load puzzle and build client from server
+    const puzzleText = await sendRequest();
+    console.log(puzzleText);
+    const blankPuzzle = parsePuzzle(puzzleText);
+    console.log(blankPuzzle);
+    const client = new Client(blankPuzzle);
 
     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
-    drawPuzzle(canvas, blank);
-    // // when the user clicks on the drawing canvas...
-
+    drawPuzzle(canvas, blankPuzzle);
+    
+    // when the user clicks on the drawing canvas...
     canvas.addEventListener('click', (event: MouseEvent) => {
         // drawBox(canvas, event.offsetX, event.offsetY);
         const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, client.getState());
@@ -208,5 +190,4 @@ const blank = parsePuzzle(served);
     });
 }
 
-const PORT = 8789;
-main();
+void main();

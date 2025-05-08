@@ -85,35 +85,36 @@ class WebServer {
          * 
          * Response is the board state from playerId's perspective, as described in the ps4 handout.
          */
-        this.app.get('/puzzle', async(request, response) => {
-            // const { playerId } = request.params;
-            // assert(playerId);
+        this.app.get('/puzzle/:filename', async(request, response) => {
+            // select and load puzzle file per request
+            const filename = request.params['filename'];
+            const data = await fs.promises.readFile(`./puzzles/${filename}.starb`, 'utf-8');
 
-            // const puzzle = "ada";
-            // const data = await fs.promises.readFile("./puzzles/kd-6-31-6.starb", 'utf-8');
-            const data = await fs.promises.readFile("./puzzles/kd-1-1-1.starb", 'utf-8');
+            // remove stars from string to send blank puzzle string
+            const dataLines = data.split(`\n`);
+            let blankBoard = "";
+            let first = true;
+
+            // move "|" to beginning of each region, makign all squares empty
+            for (const line of dataLines){
+                if (line[0] !== "#" && line.length > 1){    // removes unnecessary comment lines
+                    const newLine = (first) ? line :  " | " + line.replace("| ", "");
+                    first = false;
+                    blankBoard += newLine + "\n";
+                }
+            }
+            console.log("Puzzle sent!");
+
+            //send response
             response
             .status(StatusCodes.OK) // 200
             .type('text')
-            .send(data);
+            .send(blankBoard);
+
+            // close server after puzzle is sent
+            this.stop();
         });
-        // this.app.get('', async(request, response) => {
-        //     // const { playerId } = request.params;
-        //     // assert(playerId);
 
-        //     // const puzzle = "ada";
-        //     const data = await fs.promises.readFile("./", 'utf-8');
-        //     response
-        //     .status(StatusCodes.OK) // 200
-        //     .type('text')
-        //     .send(data);
-        // });
-
-        /*
-         * GET /
-         *
-         * Response is the game UI as an HTML page.
-         */
         this.app.use(express.static('public/'));
     }
 
@@ -156,43 +157,3 @@ class WebServer {
 }
 
 await main();
-
-/**
- * 
- async function sendRequest(): Promise<void> {
-     try {
-       const res = await fetch('http://localhost:8789');
-       
-     //   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-     //   const data = await res.text();      // matches the JSON we now send
-     //   alert(data);
-     } catch (err) {
-       alert('Fetch failed: ' + err);
-     }
-   }
- // await sendRequest();
- 
- async function main(): Promise<void> {
- 
-     // output area for printing
-     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-     // canvas for drawing
-     const canvas: HTMLElement|null = document.getElementById('canvas');
-     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-     alert("yogurt");
-     // // await draw(canvas);
-     alert("yo");
- 
-     // when the user clicks on the drawing canvas...
-     // canvas.addEventListener('click',  (event: MouseEvent) => {
-     //     drawBox(canvas, event.offsetX, event.offsetY);
-     // });
-     await sendRequest();
-     
-     // add initial instructions to the output area
-     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
- }
- 
- const PORT = 8789;
- main();
- */
