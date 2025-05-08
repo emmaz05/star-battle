@@ -34,8 +34,8 @@ export class Client {
     
 
     private currentState: Puzzle;
-    private readonly outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    private readonly canvas: HTMLCanvasElement;
+    // private readonly outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
+    // private readonly canvas: HTMLCanvasElement;
 
     /**
      * Creates a new client for the game.
@@ -43,11 +43,11 @@ export class Client {
      */
     public constructor(blankPuzzle: Puzzle) {
         this.currentState = blankPuzzle;
-        const canvas = document.getElementById('canvas');
-        if (!(canvas instanceof HTMLCanvasElement)) throw new Error('missing drawing canvas');
-        this.canvas = canvas;
-        drawBlankBoard(this.canvas, this.currentState);
-        printOutput(this.outputArea, `Click on a square on the board to add and remove stars`);
+        // const canvas = document.getElementById('canvas');
+        // if (!(canvas instanceof HTMLCanvasElement)) throw new Error('missing drawing canvas');
+        // this.canvas = canvas;
+        // drawBlankBoard(this.canvas, this.currentState);
+        // printOutput(this.outputArea, `Click on a square on the board to add and remove stars`);
         this.checkRep();
     }
 
@@ -79,7 +79,7 @@ export class Client {
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
         this.currentState = this.currentState.addStar(row, col);
-        drawStar(this.canvas, row, col);
+        // drawStar(this.canvas, row, col);
         this.checkSolved();
         
     }
@@ -97,7 +97,7 @@ export class Client {
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
         this.currentState = this.currentState.removeStar(row, col);
-        eraseStar(this.canvas, row, col, this.currentState);
+        // eraseStar(this.canvas, row, col, this.currentState);
         this.checkSolved();
     }
 
@@ -107,9 +107,9 @@ export class Client {
      */
     public checkSolved(): boolean {
         const solved = this.currentState.isSolved();
-        if (solved) {
-            printOutput(this.outputArea, 'Puzzle solved! >:)');
-        }
+        // if (solved) {
+        //     printOutput(this.outputArea, 'Puzzle solved! >:)');
+        // }
         return solved;
     }
 
