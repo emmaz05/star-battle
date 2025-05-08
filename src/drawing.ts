@@ -9,11 +9,10 @@ import assert from 'node:assert';
 const BOX_SIZE = 16;
 const CELL_BORDER = 0.2;
 const CELL_SIZE = 40; 
-const STAR_RADIUS = 10;
+const STAR_RADIUS = 12;
 
 // mapping of regions to their colors
 const regionColors = new Map<number, Color>();
-
 
 
 /**
@@ -52,22 +51,75 @@ export function drawBox(canvas: HTMLCanvasElement, x: number, y: number, color: 
     context.restore();
     }
 }
+
+/**
+ * Draw a circle at the specified coordinates
+ * 
+ * @param canvas canvas to draw on
+ * @param x x coordinate of center of circle
+ * @param y y coordinate of center of circle
+ * @param color color to fill circle background
+ */
+export function drawCircle(canvas: HTMLCanvasElement, x: number, y: number, color: string, radius: number): void {
+    const context = canvas.getContext('2d');
+    assert(context !== null, 'unable to get canvas drawing context');
+    if (context !== null) {
+        context.save();
+
+        // translate to (x, y) for drawing
+        context.translate(x, y);
+
+        // draw the circle
+        context.beginPath();
+        context.arc(0, 0, radius, 0, 2 * Math.PI); // Circle centered at (0, 0) with radius BOX_SIZE/2
+        context.fillStyle = color; // Fill color
+        context.fill();
+
+        context.lineWidth = CELL_BORDER;
+        context.strokeStyle = color;
+        context.stroke();
+
+        context.restore();
+    }
+}
+
+/**
+ * Clamps the coordinates to the center of a cell in the grid
+ * 
+ * @param canvas the canvas to draw on
+ * @param x the x coordinate to clamp
+ * @param y the y coordinate to clamp
+ * @param puzzle the puzzle whose grid to clamp to
+ * @returns the clamped coordinates in row-col format (origin is top left)
+ */
+export function cellCoords(canvas: HTMLCanvasElement, x: number, y: number, puzzle: Puzzle): [number, number] {
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+
+    const row = Math.min(Math.max(Math.floor(y / CELL_HEIGHT), 0), puzzle.height - 1);
+    const col = Math.min(Math.max(Math.floor(x / CELL_WIDTH), 0), puzzle.width - 1);
+
+    return [ row, col ];
+   
+}
+
 /**
  * draws a circle in the middle of the specified square on the grid
  * @param canvas canvas to draw on
  * @param row row to draw on
  * @param col column to draw on
  */
-export function drawStar(canvas: HTMLCanvasElement, row: number, col: number): void {
-    const context = canvas.getContext('2d');
-    assert(context !== null, 'unable to get canvas drawing context');
-    const x = col * CELL_SIZE + CELL_SIZE / 2;
-    const y = row * CELL_SIZE + CELL_SIZE / 2;
-    context.fillStyle = 'black';
-    context.beginPath();
-    context.arc(x, y, STAR_RADIUS, 0, 2 * Math.PI);
-    context.fill();
+export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
+
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+    
+    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+    drawCircle(canvas, x, y, 'black', STAR_RADIUS);
 }
+
 /**
  * draws a circle in the middle of the specified square on the grid
  * @param canvas canvas to draw on
@@ -75,19 +127,18 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number): v
  * @param col column to draw on
  * @param board current state of board
  */
-export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, board: Puzzle): void {
-    const context = canvas.getContext('2d');
-    assert(context !== null, 'unable to get canvas drawing context');
-    const x = col * CELL_SIZE + CELL_SIZE / 2;
-    const y = row * CELL_SIZE + CELL_SIZE / 2;
-    const cell = board.getCellAt(row, col);
-    const cellColor = regionColors.get(cell.regionId);
-    const WHITE_TONE = 255;
-    const WHITE: Color = [WHITE_TONE, WHITE_TONE, WHITE_TONE];
-    context.fillStyle = colorToHexColor(cellColor ?? WHITE);
-    context.beginPath();
-    context.arc(x, y, STAR_RADIUS, 0, 2 * Math.PI);
-    context.fill();
+export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
+
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+    
+    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
+
+    let color = regionColors.get(puzzle.getCellAt(row, col).regionId);
+    if (color === undefined) { color = [255, 255, 255]; }
+
+    drawCircle(canvas, x, y, colorToHexColor(color), STAR_RADIUS + 1);
 }
 
 /**
@@ -103,8 +154,6 @@ export function printOutput(outputArea: HTMLElement, message: string): void {
     // scroll the output area so that what we just printed is visible
     outputArea.scrollTop = outputArea.scrollHeight;
 }
-
-
 
 /**
  * Draw the black puzzle given the board state

@@ -51,7 +51,7 @@ export function parsePuzzle(input: string): Puzzle {
     const height = dims[0];
     if (width === undefined || height === undefined) throw new Error('undefined board dimensions');
 
-    // Parse all regions
+    // Parse all regions, and create an array of all the cells within all regions
     const regions = parseTree.childrenByName(PuzzleGrammar.Region);
     const cells: Cell[] = [];
     for (let regionIdx = 0; regionIdx < regions.length; regionIdx += 1) {
@@ -67,7 +67,17 @@ export function parsePuzzle(input: string): Puzzle {
         for (const star of stars.childrenByName(PuzzleGrammar.Position)) {
             const starDims = star.childrenByName(PuzzleGrammar.Number);
             if (starDims[0] === undefined || starDims[1] === undefined) throw new Error('position should have two numbers for row and column');
-            const cell = { row: parseInt(starDims[0].text) - 1, col: parseInt(starDims[1].text) - 1, regionId: regionIdx, currentState: CellState.Empty, expectedState: CellState.Star};
+
+            // Parse the row an column to Puzzle coordinates (0-indexed), and add the new cell to cells
+            const parsedRow = parseInt(starDims[0].text) - 1;
+            const parsedCol = parseInt(starDims[1].text) - 1;
+            const cell = {
+                row: parsedRow, 
+                col: parsedCol, 
+                regionId: regionIdx, 
+                currentState: CellState.Empty,  // All new cells start off as empty
+                expectedState: CellState.Star   // But these cells are expected to have a star for the solution
+            };
             cells.push(cell);
         }
 
@@ -75,7 +85,17 @@ export function parsePuzzle(input: string): Puzzle {
         for (const blank of blanks.childrenByName(PuzzleGrammar.Position)) {
             const blankDims = blank.childrenByName(PuzzleGrammar.Number);
             if (blankDims[0] === undefined || blankDims[1] === undefined) throw new Error('position should have two numbers for row and column');
-            const cell = { row: parseInt(blankDims[0].text) - 1, col: parseInt(blankDims[1].text) - 1, regionId: regionIdx, currentState: CellState.Empty, expectedState: CellState.Empty};
+
+            // Parse the row an column to Puzzle coordinates (0-indexed), and add the new cell to cells
+            const parsedRow = parseInt(blankDims[0].text) - 1;
+            const parsedCol = parseInt(blankDims[1].text) - 1;
+            const cell = {
+                row: parsedRow, 
+                col: parsedCol, 
+                regionId: regionIdx, 
+                currentState: CellState.Empty,  // All new cells start off as empty
+                expectedState: CellState.Empty  // And these cells are expected to stay empty
+            };
             cells.push(cell);
         }
         
