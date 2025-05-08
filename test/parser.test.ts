@@ -7,15 +7,15 @@ import fs from 'fs';
 
 
 const SMALL_GRID: Array<Cell> = [
-    {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
-    {row: 0, col: 1, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Star},
-    {row: 0, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
-    {row: 1, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Star}, //
-    {row: 1, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},//
-    {row: 1, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},//
-    {row: 2, col: 0, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
-    {row: 2, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
-    {row: 2, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Star}
+    {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+    {row: 0, col: 1, regionId: 1, state: CellState.Star},
+    {row: 0, col: 2, regionId: 1, state: CellState.Empty},
+    {row: 1, col: 0, regionId: 0, state: CellState.Star}, //
+    {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
+    {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
+    {row: 2, col: 0, regionId: 2, state: CellState.Empty},
+    {row: 2, col: 1, regionId: 2, state: CellState.Empty},
+    {row: 2, col: 2, regionId: 1, state: CellState.Star}
 ]
 
 
