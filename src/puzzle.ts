@@ -8,7 +8,7 @@ import assert from "assert";
  * 
  * Abstraction Function:
  *  AF(row, col, regionId, state) = the cell at position (row, col) in the grid,
- *      belonging to region regionId with current state state (emoty or starred)
+ *      belonging to region regionId with current state state (empty or starred)
  * Representation Invariant:
  *    - true
  * Safety from Representation Exposure:
@@ -100,6 +100,11 @@ export class Puzzle {
         // Go over all cells, get their index into this.grid, and fill it
         for (const cell of cells) {
             const cellIndex = this.coordsToIndex(cell.row, cell.col);
+
+            if (this.grid[cellIndex] !== undefined) {
+                throw new Error(`Cell (${cell.row}, ${cell.col}) already exists in grid at index ${cellIndex}`);
+            }
+
             this.grid[cellIndex] = cell;
         }
     }
@@ -177,7 +182,7 @@ export class Puzzle {
         return total;
     }
 
-    /**s
+    /**
      * Gets the total number of stars in the same region.
      * 
      * @param regionId the region ID of the region to check
@@ -395,7 +400,6 @@ export class Puzzle {
         }
         return copyOfRegions;
     }
-
 
     /**
      * Checks if the puzzle has been solved, according to the rules

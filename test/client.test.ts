@@ -1,7 +1,20 @@
 import assert from 'assert';
 import { Client } from '../src/starb-client.js';
 import { Cell, CellState, Puzzle } from '../src/puzzle.js';
+import { parsePuzzle } from '../src/parser.js';
+import fs from 'fs';
 
+// const EMPTY_GRID: Array<Cell> = [
+//     {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+//     {row: 0, col: 1, regionId: 1, state: CellState.Empty},
+//     {row: 0, col: 2, regionId: 1, state: CellState.Empty},
+//     {row: 1, col: 0, regionId: 0, state: CellState.Empty}, //
+//     {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
+//     {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
+//     {row: 2, col: 0, regionId: 2, state: CellState.Empty},
+//     {row: 2, col: 1, regionId: 2, state: CellState.Empty},
+//     {row: 2, col: 2, regionId: 1, state: CellState.Empty}
+// ]
 const EMPTY_GRID: Array<Cell> = [
     {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
     {row: 0, col: 1, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
@@ -41,8 +54,16 @@ describe('Client', function () {
      *      - puzzle is solved
      */
 
+    
     it('addStar: dimensions are legal, square at row, col is empty; removeStar: dimensions are legal, square at row, col has star; checkSolved: puzzle is in progress', function() { 
-        const blank = new Puzzle(3, 3, EMPTY_GRID);
+        const input = fs.readFileSync('./puzzles/kd-1-1-1.starb', 'utf-8');
+        console.log(input);
+        const inp = `10x10
+1,2  1,5  | 1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5
+
+`
+        const blank = parsePuzzle(input);
+        console.log(blank);
         const client = new Client(blank);
         client.addStar(0, 2);
         const state1 = client.getState();

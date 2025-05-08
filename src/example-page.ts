@@ -7,9 +7,10 @@
 //   with the exception of node:assert.
 
 import assert from 'node:assert';
-import {parsePuzzle} from './parser.js';
-import { drawBlankBoard } from './drawing.js';
-import * as fs from 'fs';
+import { drawStar, drawCircle, cellCoords, eraseStar } from './drawing.js';
+import { Cell, CellState } from './puzzle.js';
+import { Puzzle } from './puzzle.js';
+
 const BOX_SIZE = 16;
 
 // categorical colors from
@@ -79,26 +80,57 @@ function printOutput(outputArea: HTMLElement, message: string): void {
     outputArea.scrollTop = outputArea.scrollHeight;
 }
 
+
+
 /**
  * Set up the example page.
  */
-async function main(): Promise<void> {
+function main(): void {
+
+
+    const SMALL_GRID: Array<Cell> = [
+        {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
+        {row: 0, col: 1, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty},
+        {row: 0, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
+        {row: 1, col: 0, regionId: 0, currentState: CellState.Star, expectedState: CellState.Empty}, //
+        {row: 1, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},//
+        {row: 1, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},//
+        {row: 2, col: 0, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+        {row: 2, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+        {row: 2, col: 2, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty}
+    ];
+
+    const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+
+
+
+
+
 
     // output area for printing
     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
     // canvas for drawing
     const canvas: HTMLElement|null = document.getElementById('canvas');
     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-    alert("yogurt");
-    // // await draw(canvas);
-    alert("yo");
+
+    for (let row = 0; row < 3; row += 1) {
+        for (let col = 0; col < 3; col += 1) {
+            drawStar(canvas, row, col, puzzle);
+        }
+    }
 
     // when the user clicks on the drawing canvas...
-    canvas.addEventListener('click',  (event: MouseEvent) => {
-        drawBox(canvas, event.offsetX, event.offsetY);
+    canvas.addEventListener('click', (event: MouseEvent) => {
+        // drawBox(canvas, event.offsetX, event.offsetY);
+        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
+        alert(`row: ${row}, col: ${col}`);
+        // drawCircle(canvas, row, col, "red");
+        eraseStar(canvas, row, col, puzzle);
     });
-    await sendRequest();
+
     
+
+
     // add initial instructions to the output area
     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 }
