@@ -15,20 +15,6 @@ number ::= [0-9]+;
 newline ::= "\\r"? "\\n";
 whitespace ::= [ \\t\\r\\n]+;
 `;
-// const grammar = `
-// @skip skip {
-//   // skip is defined as either whitespace or an entire comment line
-//   skip       ::= whitespace | comment ;
-//   whitespace ::= [ \\t\\r\\n]+ ;
-//   comment    ::= "#" [^\\n\\r]* ;
-
-//   puzzleFile ::= number "x" number region+ ;
-//   region     ::= position+ "|" position+ ;
-//   position   ::= number "," number ;
-//   number     ::= [0-9]+ ;
-// }
-// `;
-
 
 
 enum PuzzleGrammar {
