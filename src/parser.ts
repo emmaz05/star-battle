@@ -2,17 +2,32 @@ import { Parser, ParseTree, compile, visualizeAsUrl } from 'parserlib';
 import { Puzzle, Cell, CellState } from './puzzle.js';
 
 
-//BOARD_FILE ::= ROW "x" COLUMN NEWLINE (REGION NEWLINE)+
-//REGION ::= POSITION (" ")+ POSITION "|" (POSITION)+
+const grammar = `
 
-//POSITION ::= INT "," INT
-//ROW ::= INT
-//COLUMN ::= INT
-//INT ::= [0-9]+
-//NEWLINE ::= "\r"? "\n"
+puzzleFile ::= comment* number 'x' number newline (region newline)+ newline*;
+region ::= positionList space '|' space positionList;
+positionList ::= position (space position)*;
+position ::= number ',' number;
+comment ::= '#' [^\\n\\r]* newline;
+space ::= ' '*;
+number ::= [0-9]+;
+
+newline ::= "\\r"? "\\n";
+whitespace ::= [ \\t\\r\\n]+;
+`;
 
 
-
+enum PuzzleGrammar {
+    PuzzleFile,
+    Region,
+    PositionList,
+    Position,
+    Space,
+    Number,
+    Comment,
+    Whitespace,
+    Newline
+}
 
 export const parser: Parser<PuzzleGrammar> = compile(grammar, PuzzleGrammar, PuzzleGrammar.PuzzleFile);
 
@@ -32,10 +47,9 @@ export function parsePuzzle(input: string): Puzzle {
    
     // Get puzzle dimensions
     const dims = parseTree.childrenByName(PuzzleGrammar.Number).map(child => parseInt(child.text));
-    if (dims.length !== 2) throw new Error("Invalid puzzle dimensions");
-
-    const width = dims[0];
-    const height = dims[1];
+    if (dims.length < 2) throw new Error("Invalid puzzle dimensions");
+    const width = dims[1];
+    const height = dims[0];
     if (width === undefined || height === undefined) throw new Error('undefined board dimensions');
 
     // Parse all regions, and create an array of all the cells within all regions
@@ -91,4 +105,12 @@ export function parsePuzzle(input: string): Puzzle {
     // Create and return the Puzzle
     return new Puzzle(height, width, cells);
 }
+
+// /**
+//  * 
+//  * @param filename name of file to parse
+//  */
+// export function parsePuzzleFile(filename: string): Puzzle {
+
+// }
 

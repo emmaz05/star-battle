@@ -119,6 +119,40 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, pu
     drawCircle(canvas, x, y, 'black', STAR_RADIUS);
 }
 
+export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle, color: string): void {
+    
+    // const cell: Cell = puzzle.getCellAt(row, col);
+    
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
+    
+    // const color = regionColors.get(puzzle.getCellAt(row, col).regionId);
+
+    const context = canvas.getContext('2d');
+    assert(context !== null, 'unable to get canvas drawing context');
+    if (context !== null) {
+        context.save();
+
+        // Translate the origin to (x, y)
+        context.translate(x, y);
+
+        // Draw the rectangle centered on (0, 0)
+        context.fillStyle = color;
+        context.fillRect(-CELL_WIDTH / 2, -CELL_HEIGHT / 2, CELL_WIDTH, CELL_HEIGHT);
+
+        context.lineWidth = CELL_BORDER;
+        context.strokeStyle = color;
+        context.strokeRect(-CELL_WIDTH / 2, -CELL_HEIGHT / 2, CELL_WIDTH, CELL_HEIGHT);
+
+        context.restore();
+    }
+}
+
+    
+
+
 /**
  * draws a circle in the middle of the specified square on the grid
  * @param canvas canvas to draw on
@@ -139,6 +173,7 @@ export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, p
 
     drawCircle(canvas, x, y, colorToHexColor(color), STAR_RADIUS + 1);
 }
+
 
 /**
  * Print a message by appending it to an HTML element.
@@ -183,10 +218,11 @@ export function drawBlankBoard(canvas: HTMLCanvasElement, board: Puzzle): void {
         }
         
         for (const cell of cellList){
-            drawBox(
+            drawCell(
                 canvas,
-                (cell.col + 2*CELL_BORDER) * BOX_SIZE + OFFSET_X,
-                (cell.row + 2*CELL_BORDER) * BOX_SIZE + OFFSET_Y,
+                (cell.col),
+                (cell.row),
+                board,
                 colorToHexColor(regionColor)
             );
         }

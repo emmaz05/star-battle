@@ -96,7 +96,7 @@ export class Client {
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
         this.currentState = this.currentState.removeStar(row, col);
-        eraseStar(this.canvas, row, col, this.currentState);
+        // eraseStar(this.canvas, row, col, this.currentState);
         this.checkSolved();
     }
 
@@ -106,9 +106,9 @@ export class Client {
      */
     public checkSolved(): boolean {
         const solved = this.currentState.isSolved();
-        if (solved) {
-            printOutput(this.outputArea, 'Puzzle solved! >:)');
-        }
+        // if (solved) {
+        //     printOutput(this.outputArea, 'Puzzle solved! >:)');
+        // }
         return solved;
     }
 

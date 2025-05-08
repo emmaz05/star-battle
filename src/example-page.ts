@@ -7,7 +7,7 @@
 //   with the exception of node:assert.
 
 import assert from 'node:assert';
-import { drawStar, drawCircle, cellCoords, eraseStar } from './drawing.js';
+import { drawStar, drawBlankBoard, cellCoords, eraseStar, drawCell } from './drawing.js';
 import { Cell, CellState } from './puzzle.js';
 import { Puzzle } from './puzzle.js';
 
@@ -119,14 +119,16 @@ function main(): void {
         }
     }
 
-    // when the user clicks on the drawing canvas...
-    canvas.addEventListener('click', (event: MouseEvent) => {
-        // drawBox(canvas, event.offsetX, event.offsetY);
-        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
-        alert(`row: ${row}, col: ${col}`);
-        // drawCircle(canvas, row, col, "red");
-        eraseStar(canvas, row, col, puzzle);
-    });
+    drawBlankBoard(canvas, puzzle);
+    // // when the user clicks on the drawing canvas...
+    // canvas.addEventListener('click', (event: MouseEvent) => {
+    //     // drawBox(canvas, event.offsetX, event.offsetY);
+    //     const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
+    //     alert(`row: ${row}, col: ${col}`);
+    //     // drawCircle(canvas, row, col, "red");
+    //     // eraseStar(canvas, row, col, puzzle);
+    //     drawCell(canvas, row, col, puzzle);
+    // });
 
     
 
