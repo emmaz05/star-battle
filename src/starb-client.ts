@@ -130,20 +130,21 @@ export class Client {
 
 // start client stuff
 
-async function sendRequest(): Promise<void> {
+async function sendRequest(): Promise<string> {
     try {
-      const res = await fetch('http://localhost:8789');
+      const res = await fetch('http://localhost:8789/puzzle');
       
-    //   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    //   const data = await res.text();      // matches the JSON we now send
-    //   alert(data);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.text();      // matches the JSON we now send
+      return data;
     } catch (err) {
-      alert('Fetch failed: ' + err);
+      console.error('Fetch failed: ' + err);
+      return "failed";
     }
   }
 // await sendRequest();
 
-function main(): void {
+async function main(): Promise<void> {
 
     // output area for printing
     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
@@ -163,7 +164,7 @@ function main(): void {
     // add initial instructions to the output area
     // const input = fs.readFileSync('puzzles/kd-1-1-1.starb', 'utf-8');
     // console.log(input);
-    const blank = parsePuzzle(`# Star Battle Puzzles by KrazyDad, Volume 6, Book 31, Number 6
+    const blank1 = parsePuzzle(`# Star Battle Puzzles by KrazyDad, Volume 6, Book 31, Number 6
 #  - higher book numbers should be more difficult!
 # https://krazydad.com/starbattle/sfiles/STAR_R2_10x10_v6_b31.pdf
 10x10
@@ -179,6 +180,8 @@ function main(): void {
 9,7  10,9 | 9,9 10,6 10,7 10,8
 
 `);
+const served = await sendRequest();
+const blank = parsePuzzle(served);
     console.log(blank);
     const client = new Client(blank);
 

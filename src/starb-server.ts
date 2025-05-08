@@ -90,23 +90,24 @@ class WebServer {
             // assert(playerId);
 
             // const puzzle = "ada";
+            // const data = await fs.promises.readFile("./puzzles/kd-6-31-6.starb", 'utf-8');
             const data = await fs.promises.readFile("./puzzles/kd-1-1-1.starb", 'utf-8');
             response
             .status(StatusCodes.OK) // 200
             .type('text')
             .send(data);
         });
-        this.app.get('', async(request, response) => {
-            // const { playerId } = request.params;
-            // assert(playerId);
+        // this.app.get('', async(request, response) => {
+        //     // const { playerId } = request.params;
+        //     // assert(playerId);
 
-            // const puzzle = "ada";
-            const data = await fs.promises.readFile("./", 'utf-8');
-            response
-            .status(StatusCodes.OK) // 200
-            .type('text')
-            .send(data);
-        });
+        //     // const puzzle = "ada";
+        //     const data = await fs.promises.readFile("./", 'utf-8');
+        //     response
+        //     .status(StatusCodes.OK) // 200
+        //     .type('text')
+        //     .send(data);
+        // });
 
         /*
          * GET /
