@@ -119,6 +119,15 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, pu
     drawCircle(canvas, x, y, 'black', STAR_RADIUS);
 }
 
+/**
+ * Draws a cell of the puzzle at the specified row and column coordinates
+ * 
+ * @param canvas the canvas to draw on
+ * @param row the row coordinate of the cell
+ * @param col the column coordinate of the cell
+ * @param puzzle the puzzle this cell belongs to
+ * @param color the color of the cell to use
+ */
 export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle, color: string): void {
     
     // const cell: Cell = puzzle.getCellAt(row, col);
@@ -150,7 +159,38 @@ export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, pu
     }
 }
 
-    
+export function drawPuzzle(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
+    const regions: Map<number, Array<Cell>> = puzzle.getRegions();
+    const dhue = 360 / regions.size;
+
+    for ()
+
+}
+
+
+export function hueToRGB(hue: number): string {
+    // Ensure hue wraps around if it's out of bounds
+    hue = ((hue % 360) + 360) % 360;
+
+    // Convert HSL (hue, 100%, 50%) to RGB
+    const c = 1; // chroma = (1 - |2L - 1|) * S, with L = 0.5, S = 1
+    const x = c * (1 - Math.abs((hue / 60) % 2 - 1));
+    const m = 0; // we add this later but since L=0.5 and c=1, m=0
+
+    let r = 0, g = 0, b = 0;
+
+    if (hue < 60)      [r, g, b] = [c, x, 0];
+    else if (hue < 120)[r, g, b] = [x, c, 0];
+    else if (hue < 180)[r, g, b] = [0, c, x];
+    else if (hue < 240)[r, g, b] = [0, x, c];
+    else if (hue < 300)[r, g, b] = [x, 0, c];
+    else               [r, g, b] = [c, 0, x];
+
+    // Convert to 0–255 and return as CSS rgb() string
+    return `rgb(${Math.round((r + m) * 255)}, ${Math.round((g + m) * 255)}, ${Math.round((b + m) * 255)})`;
+}
+
+
 
 
 /**
