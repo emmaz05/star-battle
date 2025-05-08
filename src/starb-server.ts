@@ -16,37 +16,7 @@ import { Server } from 'node:http';
  * Start a server that serves puzzles from the `puzzles` directory
  * on localhost:8789.
  */
-// async function main(): Promise<void> {
-//     // TODO
-//     const app = express();
-//     const PORT = 8789;
-//     app.listen(PORT).on('listening', () => console.log(`now listening at http://localhost:${PORT}`));
-
-//     // GET /echo?greeting=<string>
-//     //
-//     // response is a greeting including <string>
-//     app.get('/puzzle', async (request: Request, response: Response) => {
-//         // const data = await fs.promises.readFile("./puzzles/kd-1-1-1/starb", 'utf-8');
-//         const data = "ddsfas";
-//         // return data;
-//         response
-//             .status(StatusCodes.OK)
-//             .type('text')
-//             .send((data));
-//     });
-// }
-
-
  async function main(): Promise<void> {
-    // const [portString, filename] 
-    //     = process.argv.slice(2); // skip the first two arguments 
-    //                              // (argv[0] is node executable file, argv[1] is this script)
-    // if (portString === undefined) { throw new Error('missing PORT'); }
-    // const port = parseInt(portString);
-    // if (isNaN(port) || port < 0) { throw new Error('invalid PORT'); }
-    // if (filename === undefined) { throw new Error('missing FILENAME'); }
-    
-    // const board = await Board.parseFromFile(filename);
     const PORT = 8789;
     const server = new WebServer(PORT);
     await server.start();
@@ -64,11 +34,9 @@ class WebServer {
     /**
      * Make a new web game server using board that listens for connections on port.
      * 
-     * @param board shared game board
      * @param requestedPort server port number
      */
     public constructor(
-        // private readonly board: Board, 
         private readonly requestedPort: number
     ) {
         this.app = express();
