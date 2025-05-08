@@ -11,6 +11,7 @@ import { Puzzle, Cell, CellState } from './puzzle.js';
 //INT ::= [0-9]+
 //NEWLINE ::= "\r"? "\n"
 
+
 const grammar = `@skip whitespace {
     puzzleFile ::= number "x" number newline (region newline)+;
     region ::= positionList space "|" space positionList;

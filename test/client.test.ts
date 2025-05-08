@@ -2,17 +2,18 @@ import assert from 'assert';
 import { Client } from '../src/starb-client.js';
 import { Cell, CellState, Puzzle } from '../src/puzzle.js';
 
-const EMPTY_GRID: Array<Cell> = [
-    {row: 0, col: 0, regionId: 0, state: CellState.Empty},
-    {row: 0, col: 1, regionId: 1, state: CellState.Empty},
-    {row: 0, col: 2, regionId: 1, state: CellState.Empty},
-    {row: 1, col: 0, regionId: 0, state: CellState.Empty}, //
-    {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
-    {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
-    {row: 2, col: 0, regionId: 2, state: CellState.Empty},
-    {row: 2, col: 1, regionId: 2, state: CellState.Empty},
-    {row: 2, col: 2, regionId: 1, state: CellState.Empty}
-]
+// const EMPTY_GRID: Array<Cell> = [
+//     {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+//     {row: 0, col: 1, regionId: 1, state: CellState.Empty},
+//     {row: 0, col: 2, regionId: 1, state: CellState.Empty},
+//     {row: 1, col: 0, regionId: 0, state: CellState.Empty}, //
+//     {row: 1, col: 1, regionId: 2, state: CellState.Empty},//
+//     {row: 1, col: 2, regionId: 1, state: CellState.Empty},//
+//     {row: 2, col: 0, regionId: 2, state: CellState.Empty},
+//     {row: 2, col: 1, regionId: 2, state: CellState.Empty},
+//     {row: 2, col: 2, regionId: 1, state: CellState.Empty}
+// ]
+const EMPTY_GRID: Array<Cell> = [];
 
 describe('Client', function () {
     /**

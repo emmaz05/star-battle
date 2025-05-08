@@ -1,5 +1,7 @@
 import assert from 'assert';
-import { Puzzle, Cell, CellState } from '../src/puzzle.js';
+import { Puzzle, Cell, CellState } from '../src/puzzle.js'
+import { parsePuzzle } from '../src/parser.js';
+import fs from 'fs';
 // import { describe, it } from 'mocha';
 
 
@@ -461,8 +463,13 @@ describe('Puzzle: isSolved()', function () {
     //      - column with not exactly 2 stars
     //      - region with not exactly 2 stars
 
-    it('Covers: expected true', function() { 
-        throw new Error('Not implemented');
+    it.only('Covers: expected true', async function() { 
+        const input = await fs.promises.readFile('./puzzles/kd-1-1-1.starb', 'utf8');
+        console.log(input);
+
+        const puzzle: Puzzle = parsePuzzle(input);
+        // console.log(puzzle.getRegions());
+
     });
 
     it('Covers: expected false - empty grid', function() { 

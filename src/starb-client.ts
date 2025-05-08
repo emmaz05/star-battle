@@ -16,7 +16,6 @@ import { drawBlankBoard, drawStar, eraseStar, printOutput } from './drawing.js';
  * Puzzle to request and play.
  * Project instructions: this constant is a [for now] requirement in the project spec.
  */
-const PUZZLE = "kd-1-1-1";
 
 // see example-page.ts for an example of an interactive web page
 
@@ -79,7 +78,7 @@ export class Client {
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
         this.currentState = this.currentState.addStar(row, col);
-        drawStar(this.canvas, row, col);
+        drawStar(this.canvas, row, col, this.currentState);
         this.checkSolved();
         
     }
