@@ -108,11 +108,3 @@ export function parsePuzzle(input: string): Puzzle {
     return new Puzzle(height, width, cells);
 }
 
-// /**
-//  * 
-//  * @param filename name of file to parse
-//  */
-// export function parsePuzzleFile(filename: string): Puzzle {
-
-// }
-
