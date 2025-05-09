@@ -5,6 +5,7 @@ import assert from "assert";
 
 /**
  * An immutable data type used to represent a cell in the Star Battle grid.
+ * Cells encode their position, state, and region.
  * 
  * Abstraction Function:
  *  AF(row, col, regionId, state) = the cell at position (row, col) in the grid,
@@ -12,7 +13,7 @@ import assert from "assert";
  * Representation Invariant:
  *    - true
  * Safety from Representation Exposure:
- *    - all fields are unrreassiganble
+ *    - all fields are unrreassiganble and immutable
  */
 export type Cell = {
     readonly row: number;
@@ -96,6 +97,9 @@ export class Puzzle {
      * have length equal to this.height * this.width
      */
     private fillGrid(cells: Array<Cell>): void {
+
+        assert(cells.length === this.width * this.height, "Incorrcet number of cells provided");
+
         // Go over all cells, get their index into this.grid, and fill it
         for (const cell of cells) {
             const cellIndex = this.coordsToIndex(cell.row, cell.col);
@@ -135,8 +139,12 @@ export class Puzzle {
      * @param row the row index of the row to check.
      * Must be a non-negative integer less than this.height
      * @returns the number of stars in the row-th row
+     * @throws Error if the row coordinate is invalid
      */
     private starsInRow(row: number): number {
+
+        assert(row >= 0 && row < this.height, `Row index ${row} is invalid`);
+
         // Get the indexes of the row to tally up
         const startIndex = this.width * row;
         const endIndex = this.width * (row + 1);
@@ -161,8 +169,12 @@ export class Puzzle {
      * @param col the row index of the row to check.
      * Must be a non-negative integer less than this.width
      * @returns the number of stars in the col-th column
+     * @throws Error if the row coordinate is invalid
      */
     private starsInColumn(col: number): number {
+
+        assert(col >= 0 && col < this.width, `Column index ${col} is invalid`);
+
         // Get the indexes of the column to tally up
         const startIndex = col;
         const endIndex = this.width * this.height;
@@ -188,6 +200,7 @@ export class Puzzle {
      * 
      * @returns the number of stars in the region containing
      * cell at position (seedRow, seedCol)
+     * @throws Error if the given id does not correspond to a region
      */
     private starsInRegion(regionId: number): number {
         // Get all the cells in the region
@@ -215,18 +228,21 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * @returns true if there is a star adjacent to cell at (row, col),
      * false otherwise
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     private hasStarAdjacent(row: number, col: number): boolean {
+        
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
 
         // Go over all the cells in the 3x3 region around (row, col)
-        for (let drow = -1; drow <= 1; drow++) {
-            for (let dcol = -1; dcol <= 1; dcol++) {
+        for (let deltaRow = -1; deltaRow <= 1; deltaRow++) {
+            for (let deltaCol = -1; deltaCol <= 1; deltaCol++) {
                 // Skip the center cell
-                if (drow === 0 && dcol === 0) continue; 
+                if (deltaRow === 0 && deltaCol === 0) continue; 
 
                 // If the neighbor cell is in bounds and has a star, return true
-                const newRow = row + drow;
-                const newCol = col + dcol;
+                const newRow = row + deltaRow;
+                const newCol = col + deltaCol;
                 if (!this.coordsOutOfBounds(newRow, newCol) && this.hasStarAt(newRow, newCol)) {
                     return true;
                 }
@@ -246,6 +262,7 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * @param newState the new state of the changed cell
      * @returns a new puzzle iwth the changed cell
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     private changeCellState(row: number, col: number, newState: CellState): Puzzle {
         // Check if the coordinates are out of bounds
@@ -277,6 +294,7 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * 
      * @returns the index into this.grid which corresponds to cell (row, col)
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     private coordsToIndex(row: number, col: number): number {
         // Check if the coordinates are out of bounds
@@ -290,9 +308,12 @@ export class Puzzle {
      * the flattened 2D array index
      * 
      * @param index the index into this.grid of the cell in question
-     * @returns the cell coordinaes
+     * @returns the cell coordinates
+     * @throws Error if the index is out of this grid's range = [0, this.grid.length)
      */
     private indexToCoords(index: number): [number, number] {
+        assert(index >= 0 && index < this.grid.length, `Index ${index} is not a valid index into Puzzle grid`)
+
         return [
             Math.floor(index / this.width),
             index % this.width
@@ -327,14 +348,12 @@ export class Puzzle {
      * 
      * @returns a new Puzzle identical to the original, but with
      * a new star added to cell at position (row, col)
-     * @throws Error if there was already a star there, and if 
-     * preconditions on row and col are violated
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid,
+     * or if the specified cell was not empty
      */
     public addStar(row: number, col: number): Puzzle {
-        if (this.hasStarAt(row, col)) {
-            throw new Error(`Cannot add star to filled cell (${row}, ${col})`);
-        }
-
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+        assert(this.isEmptyAt(row, col), `Cannot add star to filled cell (${row}, ${col})`);
         return this.changeCellState(row, col, CellState.Star);
     }
 
@@ -348,13 +367,12 @@ export class Puzzle {
      * 
      * @returns a new Puzzle identical to the original, but with
      * the star removed from cell at position (row, col)
-     * @throws if preconditions on row and col are violated
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid,
+     * or if the specified cell did not contain a star to remove
      */
     public removeStar(row: number, col: number): Puzzle {
-        if (this.isEmptyAt(row, col)) {
-            throw new Error(`Cannot remove star from empty cell (${row}, ${col})`);
-        }
-
+        assert(!this.coordsOutOfBounds(row, col), `Invalid cell coordinates (${row}, ${col}) out of bounds.`);
+        assert(this.hasStarAt(row, col), `Cannot remove star from empty cell (${row}, ${col})`);
         return this.changeCellState(row, col, CellState.Empty);
     }
 
@@ -368,6 +386,7 @@ export class Puzzle {
      * 
      * @returns the true if the state of cell (row, col) is empty,
      * false otherwise
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     public isEmptyAt(row: number, col: number): boolean {
         // Check if the coordinates are out of bounds
@@ -387,6 +406,7 @@ export class Puzzle {
      * 
      * @returns the true if the state of cell (row, col) is filled with a star,
      * false otherwise
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     public hasStarAt(row: number, col: number): boolean {
         // Check if the coordinates are out of bounds
@@ -406,6 +426,7 @@ export class Puzzle {
      * 
      * @returns the true if the state of cell (row, col) is empty,
      * false otherwise
+     * @throws Error if coordinate pair (row, col) is not within the puzzle grid
      */
     public getCellAt(row: number, col: number): Cell {
         // Check if the coordinates are out of bounds
