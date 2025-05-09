@@ -9,9 +9,7 @@
 
 import assert from 'node:assert';
 import { CellState, Puzzle } from './puzzle.js';
-import { drawBlankBoard, drawStar, eraseStar, printOutput } from './drawing.js';
-import express, { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import { drawStar, eraseStar, printOutput } from './drawing.js';
 
 import { Server } from 'node:http';
 import { parsePuzzle } from './parser.js';
@@ -37,12 +35,8 @@ export class Client {
     //      true
     // Safety from Representation Exposure:
     //      The puzzle ADT is immutable so allowing outside access to currentState is safe from rep exposure
-    //      outputArea and canvas are mutated purposefully to display the state of the puzzle, and the client has no access to either fields
-    
 
     private currentState: Puzzle;
-    // private readonly outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    // private readonly canvas: HTMLCanvasElement;
 
     /**
      * Creates a new client for the game.
@@ -50,11 +44,6 @@ export class Client {
      */
     public constructor(blankPuzzle: Puzzle) {
         this.currentState = blankPuzzle;
-        // const canvas = document.getElementById('canvas');
-        // if (!(canvas instanceof HTMLCanvasElement)) throw new Error('missing drawing canvas');
-        // this.canvas = canvas;
-        // drawBlankBoard(this.canvas, this.currentState);
-        // printOutput(this.outputArea, `Click on a square on the board to add and remove stars`);
         this.checkRep();
     }
 
@@ -64,14 +53,6 @@ export class Client {
     private checkRep(): void {
         assert(true);
     }
-
-    // /**
-    //  * Request a blank puzzle for the client to work on
-    //  * @param blankPuzzle blank puzzle state 
-    //  */
-    // public request(blankPuzzle: Puzzle): void{
-    //     this.currentState = blankPuzzle;
-    // }
 
     /**
      * Updates the current puzzle state by adding a star at a specified position, 0-indexed
@@ -85,9 +66,8 @@ export class Client {
         if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (!this.currentState.isEmptyAt(row, col)) throw new Error('star already exists here');
+
         this.currentState = this.currentState.addStar(row, col);
-        // drawStar(this.canvas, row, col, this.currentState);
-        // this.checkSolved();
         
     }
 
@@ -103,18 +83,16 @@ export class Client {
         if (col >= this.currentState.width || col < 0) throw new Error('column is out of bounds');
         if (!Number.isInteger(row) || !Number.isInteger(col)) throw new Error('row and col must be integers');
         if (this.currentState.isEmptyAt(row, col)) throw new Error('no star to remove');
+
         this.currentState = this.currentState.removeStar(row, col);
-        // eraseStar(this.canvas, row, col, this.currentState);
-        // this.checkSolved();
+
     }
 
     /**
-     * checks if the puzzle is solved, and if so will display 'Puzzle solved!' message in output area
      * @returns true if puzzle is solved
      */
     public checkSolved(): boolean {
-        const solved = this.currentState.isSolved();
-        return solved;
+        return this.currentState.isSolved();
     }
 
     /**
