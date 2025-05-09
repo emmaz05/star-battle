@@ -158,12 +158,12 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, pu
 
     const ctx = canvas.getContext('2d');
     assert(ctx !== null, 'unable to get canvas drawing context');
-    const step = Math.PI / 5;
+    const STAR_POINTS = 5;
+    const step = Math.PI / STAR_POINTS;
     const rotation = -Math.PI / 2; // Start at the top point
 
     ctx.beginPath();
-    const STAR_POINTS = 10;
-    for (let i = 0; i < STAR_POINTS; i++) {
+    for (let i = 0; i < STAR_POINTS*2; i++) {
         const radius = i % 2 === 0 ? outerRadius : innerRadius;
         const angle = rotation + i * step;
         const sx = x + radius * Math.cos(angle);
