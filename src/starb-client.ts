@@ -13,7 +13,7 @@ import { drawStar, eraseStar, printOutput } from './drawing.js';
 
 import { Client } from './client.js';
 import { parsePuzzle } from './parser.js';
-import { drawPuzzle, cellCoords } from './drawing.js';
+import { drawPuzzle, gridCoords } from './drawing.js';
 
 /**
  * Puzzle to request and play.
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     // when the user clicks on the drawing canvas...
     canvas.addEventListener('click', (event: MouseEvent) => {
         // drawBox(canvas, event.offsetX, event.offsetY);
-        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, client.getState());
+        const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, client.getState());
         // alert(`row: ${row}, col: ${col}`);
 
         const cell = client.getState().getCellAt(row, col);

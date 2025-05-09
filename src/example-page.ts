@@ -7,7 +7,7 @@
 //   with the exception of node:assert.
 
 import assert from 'node:assert';
-import { drawStar, drawBlankBoard, cellCoords, eraseStar, drawCell, drawPuzzle } from './drawing.js';
+import { drawStar, drawBlankBoard, gridCoords, eraseStar, drawCell, drawPuzzle } from './drawing.js';
 import { Cell, CellState } from './puzzle.js';
 import { Puzzle } from './puzzle.js';
 import { parsePuzzle } from './parser.js';
@@ -150,7 +150,7 @@ async function main(): Promise<void> {
 
     canvas.addEventListener('click', (event: MouseEvent) => {
         // drawBox(canvas, event.offsetX, event.offsetY);
-        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
+        const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, puzzle);
         // alert(`row: ${row}, col: ${col}`);
 
         
