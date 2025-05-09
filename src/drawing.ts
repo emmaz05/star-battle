@@ -139,17 +139,19 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, pu
     // drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
     const CELL_WIDTH = canvas.width / puzzle.width;
     const CELL_HEIGHT = canvas.height / puzzle.height;
-
-    const outerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/8;
-    const innerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/16;
+    const INNER_DIV = 8;
+    const OUTER_DIV = 16;
+    const outerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/INNER_DIV;
+    const innerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/OUTER_DIV;
 
     const ctx = canvas.getContext('2d');
     assert(ctx !== null, 'unable to get canvas drawing context');
     const step = Math.PI / 5;
-    let rotation = -Math.PI / 2; // Start at the top point
+    const rotation = -Math.PI / 2; // Start at the top point
 
     ctx.beginPath();
-    for (let i = 0; i < 10; i++) {
+    const STAR_POINTS = 10;
+    for (let i = 0; i < STAR_POINTS; i++) {
         const radius = i % 2 === 0 ? outerRadius : innerRadius;
         const angle = rotation + i * step;
         const sx = x + radius * Math.cos(angle);
@@ -235,7 +237,8 @@ export function drawGrid(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
  */
 export function drawPuzzle(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
     drawGrid(canvas, puzzle);
-    for (const cell of puzzle.getGrid()) {
+    const puzzleGrid = puzzle.getGrid();
+    for (const cell of puzzleGrid) {
         if (cell.state === CellState.Star) { drawStar(canvas, cell.row, cell.col, puzzle); }
     }
 }
