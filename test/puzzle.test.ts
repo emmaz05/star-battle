@@ -613,6 +613,33 @@ describe('Puzzle: getRegions()', function() {
     });
 })
 
+describe('Puzzle: getGrid()', function() {
+    // Testing strategy:
+    // because of how simple this function is, just
+    // make sure the output produced is correct for
+    // a small and big board
+
+    it('Make sure grid is in row-major order and with correct lenth', function() { 
+        
+        const smallPuzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+        for(const cell of smallPuzzle.getGrid()) {
+            assert(SMALL_GRID.includes(cell), "Cell in grid not returned by getGrid");
+        }
+
+        const largePuzzle: Puzzle = KD_1_1_1;
+        const largeGrid: Array<Cell> = largePuzzle.getGrid();
+        assert(largeGrid.length === 100, "Incorrect number of cells in returned grid")
+        for (let i = 0; i < 100; i++) {
+            const ithCell: Cell = largeGrid[i] ?? assert.fail("Index out of range");
+            assert(ithCell.row === Math.floor(i/10), "grid does not follow row-major order");
+            assert(ithCell.col === i % 10, "grid does not follow row-major order");
+        }
+
+    });
+
+    
+})
+
 
 
     

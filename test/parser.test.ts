@@ -8,7 +8,7 @@ import fs from 'fs';
 /**
  * Tests for the Puzzle abstract data type
  */
-describe('parsePuzzle()', function () {
+describe('Parser: parsePuzzle()', function () {
     // Testing strategy:
     // Cover input space with partitions, and test inputs within each subdomain.
     //
