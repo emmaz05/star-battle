@@ -65,9 +65,6 @@ export class WebServer {
             .status(StatusCodes.OK) // 200
             .type('text')
             .send(blankBoard);
-
-            // close server after puzzle is sent
-            // this.stop();
         });
 
         this.app.use(express.static('public/'));

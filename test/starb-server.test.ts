@@ -92,11 +92,5 @@ describe('server', async function() {
         
         assert(breaker, "Should have thrown error")
         server.stop();
-
-        
-});
-    
-    
-
-    
+    });  
 });

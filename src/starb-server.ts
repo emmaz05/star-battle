@@ -17,7 +17,7 @@ import { WebServer } from './webserver.js';
  * Start a server that serves puzzles from the `puzzles` directory
  * on localhost:8789.
  */
- async function main(): Promise<void> {
+async function main(): Promise<void> {
     const PORT = 8789;
     const server = new WebServer(PORT);
     await server.start();

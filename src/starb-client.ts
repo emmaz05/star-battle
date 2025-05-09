@@ -21,7 +21,11 @@ import { drawPuzzle, gridCoords } from './drawing.js';
  */
 const PUZZLE = `kd-1-1-1`;
 const PORT = 8789;
-
+const WIN_MESSAGE = `
+==========================================
+========= YOU SOLVED THE PUZZLE! =========
+==========================================
+`
 /**
  * Sends a request to the server for the text of a blank puzzle
  * @returns the string representing the requested empty puzzle if possible, throws error otherwise
@@ -53,9 +57,7 @@ async function main(): Promise<void> {
 
     // load puzzle and build client from server
     const puzzleText = await sendRequest();
-    console.log(puzzleText);
     const blankPuzzle = parsePuzzle(puzzleText);
-    console.log(blankPuzzle);
     const client = new Client(blankPuzzle);
 
     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
@@ -75,7 +77,7 @@ async function main(): Promise<void> {
             eraseStar(canvas, row, col, client.getState());
         }
         
-        if (client.checkSolved()) printOutput(outputArea, 'YOU HAVE JUST SOLVED THE PUZZLE. >:)))');
+        if (client.checkSolved()) printOutput(outputArea, WIN_MESSAGE);
     });
 }
 
