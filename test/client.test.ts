@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Client } from '../src/starb-client.js';
+import { Client } from '../src/client.js';
 import { Cell, CellState, Puzzle } from '../src/puzzle.js';
 import { parsePuzzle } from '../src/parser.js';
 import fs from 'fs';
@@ -43,10 +43,10 @@ describe('Client', function () {
         state1.addStar(1, 1);
         assert(!state1.hasStarAt(1,1), 'puzzle state should be immutable');
 
-        client.removeStar(0, 2);
+        client.removeStar(0, 8);
         const state2 = client.getState();
-        assert(!state2.hasStarAt(0, 2), 'star should be removed');
-        assert(state1.hasStarAt(0, 2), 'future mutation of client should not affect previous state');
+        assert(!state2.hasStarAt(0, 8), 'star should be removed');
+        assert(state1.hasStarAt(0, 8), 'future mutation of client should not affect previous state');
         assert.strictEqual(client.checkSolved(), false, 'puzzle is still in progress');
     }); 
 
