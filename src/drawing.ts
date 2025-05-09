@@ -1,6 +1,4 @@
-
 import { Puzzle, Cell, CellState } from './puzzle.js';
-import { makePalette, Color, colorToHexColor } from './coloring/colors.js';
 // example of how to draw a puzzle with regions!
 
 
@@ -14,10 +12,24 @@ const PIXEL_MAX = 255;
 
 const STAR_RADIUS = 5;
 const STAR_COLOR = 'black';
+/**
+ * A 3-tuple representing a color.
+ */
+export type Color = [number, number, number];
 
-// mapping of regions to their colors
-const regionColors = new Map<number, Color>();
-
+/**
+ * Converts an [R, G, B] array to a hex color string.
+ *  @param rgb Color of red, green, blue values (0–255)
+ * @returns Hex color string like "#1a2b3c"
+ */
+export function colorToHexColor(rgb: Color): string {
+    return ("#" + rgb.map((color) => {
+          const hexVal = color.toString(BOX_SIZE); // discoverd radix optional param from https://www.geeksforgeeks.org/typescript-tostring-function/
+          return hexVal.length === 1 ? "0" + hexVal : hexVal;
+        }).join("")
+    );
+   }
+   
 
 // SHAPE DRAWING
 // ==========================================================================
@@ -139,10 +151,10 @@ export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, pu
     // drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
     const CELL_WIDTH = canvas.width / puzzle.width;
     const CELL_HEIGHT = canvas.height / puzzle.height;
-    const INNER_DIV = 8;
-    const OUTER_DIV = 16;
+    const INNER_DIV = BOX_SIZE / 2;
+
     const outerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/INNER_DIV;
-    const innerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/OUTER_DIV;
+    const innerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/BOX_SIZE;
 
     const ctx = canvas.getContext('2d');
     assert(ctx !== null, 'unable to get canvas drawing context');
@@ -286,49 +298,4 @@ export function printOutput(outputArea: HTMLElement, message: string): void {
 
     // scroll the output area so that what we just printed is visible
     outputArea.scrollTop = outputArea.scrollHeight;
-}
-
-/**
- * Draw the black puzzle given the board state
- * @param canvas canvas to draw on
- * @param board current state of the puzzle
- */
-export function drawBlankBoard(canvas: HTMLCanvasElement, board: Puzzle): void {
-
-    // // output area for printing
-    // const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    // // canvas for drawing
-    // const canvas: HTMLElement|null = document.getElementById('canvas');
-    // if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
-    // else{
-    const OFFSET_X = 8;
-    const OFFSET_Y = 8;
-    const regions: Map<number, Array<Cell>> = board.getRegions();
-    const GRAY_TONE = 200;
-    const LIGHT_GRAY: Color = [GRAY_TONE,GRAY_TONE,GRAY_TONE];
-    // set up colors for each region
-    let colorIdx = 0;
-    const colorPalette = makePalette(LIGHT_GRAY, regions.size);
-    regions.forEach((cellList, regId) => {
-        let regionColor = regionColors.get(regId);
-        if (regionColor === undefined){
-            regionColors.set(regId, colorPalette[colorIdx]??LIGHT_GRAY);
-            regionColor = regionColors.get(regId) ?? LIGHT_GRAY;
-        }
-        
-        for (const cell of cellList){
-            drawCell(
-                canvas,
-                (cell.col),
-                (cell.row),
-                board,
-                colorToHexColor(regionColor)
-            );
-        }
-        colorIdx++;
-      });
-    // }
-
-    // add initial instructions to the output area
-    // printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 }

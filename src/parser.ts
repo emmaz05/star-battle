@@ -61,8 +61,6 @@ export function parsePuzzle(input: string): Puzzle {
         if (positionLists === undefined) throw new Error('no position lists in region');
         const stars = positionLists[0];
         const blanks = positionLists[1];
-        // if (stars === undefined) throw new Error('no solution squares given');
-        // if (blanks === undefined) throw new Error('no blank squares given');
         
         if (stars !== undefined) {
         // push solution cells 

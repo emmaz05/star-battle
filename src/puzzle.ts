@@ -82,7 +82,7 @@ export class Puzzle {
         for (let cellIndex = 0; cellIndex < this.grid.length; cellIndex++) {
             const ithCell: Cell = this.grid[cellIndex] ?? assert.fail(`Could not get cell at index ${cellIndex}`);
             const [expectedRow, expectedCol] = this.indexToCoords(cellIndex);
-            // console.log(`Cell (${ithCell.row}, ${ithCell.col}) at index ${cellIndex} should be (${expectedRow}, ${expectedCol})`);
+            
             assert(ithCell.row === expectedRow, `Row-major order not followd by row index of cell (${ithCell.row}, ${ithCell.col})`);
             assert(ithCell.col === expectedCol, `Row-major order not followd by column index of cell (${ithCell.row}, ${ithCell.col})`);
         }

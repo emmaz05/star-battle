@@ -1,108 +1,123 @@
-/* Copyright (c) 2021-23 MIT 6.102/6.031 course staff, all rights reserved.
- * Redistribution of original or derived work requires permission of course staff.
- */
+// INGNORE THIS FILE!!!
 
-// This code is loaded into example-page.html, see the `npm watch-example` script.
-// Remember that you will *not* be able to use Node APIs like `fs` in the web browser,
-//   with the exception of node:assert.
+// /* Copyright (c) 2021-23 MIT 6.102/6.031 course staff, all rights reserved.
+//  * Redistribution of original or derived work requires permission of course staff.
+//  */
 
-import assert from 'node:assert';
-import { drawStar, drawBlankBoard, gridCoords, eraseStar, drawCell, drawPuzzle } from './drawing.js';
-import { Cell, CellState } from './puzzle.js';
-import { Puzzle } from './puzzle.js';
-import { parsePuzzle } from './parser.js';
-import fs from 'node:fs';
+// // This code is loaded into example-page.html, see the `npm watch-example` script.
+// // Remember that you will *not* be able to use Node APIs like `fs` in the web browser,
+// //   with the exception of node:assert.
 
-const BOX_SIZE = 16;
+// import assert from 'node:assert';
+// import { gridCoords, eraseStar, drawPuzzle } from './drawing.js';
+// import { Cell, CellState } from './puzzle.js';
+// import { Puzzle } from './puzzle.js';
+// import { parsePuzzle } from './parser.js';
+// import fs from 'node:fs';
 
-// categorical colors from
-// https://github.com/d3/d3-scale-chromatic/tree/v2.0.0#schemeCategory10
-const COLORS: Array<string> = [
-    '#1f77b4',
-    '#ff7f0e',
-    '#2ca02c',
-    '#d62728',
-    '#9467bd',
-    '#8c564b',
-    '#e377c2',
-    '#7f7f7f',
-    '#bcbd22',
-    '#17becf',
-];
+// const BOX_SIZE = 16;
 
-// semitransparent versions of those colors
-const BACKGROUNDS = COLORS.map((color) => color + '60');
+// // categorical colors from
+// // https://github.com/d3/d3-scale-chromatic/tree/v2.0.0#schemeCategory10
+// const COLORS: Array<string> = [
+//     '#1f77b4',
+//     '#ff7f0e',
+//     '#2ca02c',
+//     '#d62728',
+//     '#9467bd',
+//     '#8c564b',
+//     '#e377c2',
+//     '#7f7f7f',
+//     '#bcbd22',
+//     '#17becf',
+// ];
+
+// // semitransparent versions of those colors
+// const BACKGROUNDS = COLORS.map((color) => color + '60');
+
+// // /**
+// //  * Draw a black square filled with a random color.
+// //  * 
+// //  * Note: this function is designed to draw on a <canvas> element in the browser,
+// //  *   but we can adjust its signature so that it can be tested with Mocha in Node.
+// //  *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
+// //  * 
+// //  * @param canvas canvas to draw on
+// //  * @param x x position of center of box
+// //  * @param y y position of center of box
+// //  */
+// // function drawBox(canvas: HTMLCanvasElement, x: number, y: number): void {
+// //     const context = canvas.getContext('2d');
+// //     assert(context, 'unable to get canvas drawing context');
+
+// //     // save original context settings before we translate and change colors
+// //     context.save();
+
+// //     // translate the coordinate system of the drawing context:
+// //     //   the origin of `context` will now be (x,y)
+// //     context.translate(x, y);
+
+// //     // draw the outer outline box centered on the origin (which is now (x,y))
+// //     context.strokeStyle = 'black';
+// //     context.lineWidth = 2;
+// //     context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
+
+// //     // fill with a random semitransparent color
+// //     context.fillStyle = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)] ?? assert.fail();
+// //     context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
+
+// //     // reset the origin and styles back to defaults
+// //     context.restore();
+// // }
 
 // /**
-//  * Draw a black square filled with a random color.
+//  * Print a message by appending it to an HTML element.
 //  * 
-//  * Note: this function is designed to draw on a <canvas> element in the browser,
-//  *   but we can adjust its signature so that it can be tested with Mocha in Node.
-//  *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
-//  * 
-//  * @param canvas canvas to draw on
-//  * @param x x position of center of box
-//  * @param y y position of center of box
+//  * @param outputArea HTML element that should display the message
+//  * @param message message to display
 //  */
-// function drawBox(canvas: HTMLCanvasElement, x: number, y: number): void {
-//     const context = canvas.getContext('2d');
-//     assert(context, 'unable to get canvas drawing context');
+// function printOutput(outputArea: HTMLElement, message: string): void {
+//     // append the message to the output area
+//     outputArea.innerText += message + '\n';
 
-//     // save original context settings before we translate and change colors
-//     context.save();
-
-//     // translate the coordinate system of the drawing context:
-//     //   the origin of `context` will now be (x,y)
-//     context.translate(x, y);
-
-//     // draw the outer outline box centered on the origin (which is now (x,y))
-//     context.strokeStyle = 'black';
-//     context.lineWidth = 2;
-//     context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-//     // fill with a random semitransparent color
-//     context.fillStyle = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)] ?? assert.fail();
-//     context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-//     // reset the origin and styles back to defaults
-//     context.restore();
+//     // scroll the output area so that what we just printed is visible
+//     outputArea.scrollTop = outputArea.scrollHeight;
 // }
 
-/**
- * Print a message by appending it to an HTML element.
- * 
- * @param outputArea HTML element that should display the message
- * @param message message to display
- */
-function printOutput(outputArea: HTMLElement, message: string): void {
-    // append the message to the output area
-    outputArea.innerText += message + '\n';
-
-    // scroll the output area so that what we just printed is visible
-    outputArea.scrollTop = outputArea.scrollHeight;
-}
 
 
+// /**
+//  * Set up the example page.
+//  */
+// async function main(): Promise<void> {
 
-/**
- * Set up the example page.
- */
-async function main(): Promise<void> {
 
+//     // const SMALL_GRID: Array<Cell> = [
+//     //     {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
+//     //     {row: 0, col: 1, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty},
+//     //     {row: 0, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
+//     //     {row: 1, col: 0, regionId: 0, currentState: CellState.Star, expectedState: CellState.Empty}, //
+//     //     {row: 1, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},//
+//     //     {row: 1, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},//
+//     //     {row: 2, col: 0, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+//     //     {row: 2, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
+//     //     {row: 2, col: 2, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty}
+//     // ];
 
-    // const SMALL_GRID: Array<Cell> = [
-    //     {row: 0, col: 0, regionId: 0, currentState: CellState.Empty, expectedState: CellState.Empty},
-    //     {row: 0, col: 1, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty},
-    //     {row: 0, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},
-    //     {row: 1, col: 0, regionId: 0, currentState: CellState.Star, expectedState: CellState.Empty}, //
-    //     {row: 1, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},//
-    //     {row: 1, col: 2, regionId: 1, currentState: CellState.Empty, expectedState: CellState.Empty},//
-    //     {row: 2, col: 0, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
-    //     {row: 2, col: 1, regionId: 2, currentState: CellState.Empty, expectedState: CellState.Empty},
-    //     {row: 2, col: 2, regionId: 1, currentState: CellState.Star, expectedState: CellState.Empty}
-    // ];
+//     // const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
+// //     const puzzle: Puzzle = parsePuzzle(`10x10
+// // 1,2  1,5  | 1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5
+// // 2,9  4,10 | 1,9 1,10 2,10 3,9 3,10 4,9 5,9 5,10 6,9 6,10 7,10 8,10
+// // 3,2  3,4  | 3,3
+// // 2,7  4,8  | 3,6 3,7 3,8
+// // 6,1  9,1  | 3,1 4,1 4,2 4,3 4,4 5,1 5,2 5,3 6,2 7,1 7,2 8,1 8,2 8,3 8,4 8,5 8,6
+// // 5,4  5,6  | 4,5 5,5 6,4 6,5 6,6
+// // 6,8  8,7  | 4,6 4,7 5,7 5,8 6,7 7,6 7,7 7,8 8,8
+// // 7,3  7,5  | 6,3 7,4
+// // 8,9 10,10 | 7,9 9,9 9,10
+// // 9,3  10,6 | 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9
+// // `);
 
-    // const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
 //     const puzzle: Puzzle = parsePuzzle(`10x10
 // 1,2  1,5  | 1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5
 // 2,9  4,10 | 1,9 1,10 2,10 3,9 3,10 4,9 5,9 5,10 6,9 6,10 7,10 8,10
@@ -116,104 +131,91 @@ async function main(): Promise<void> {
 // 9,3  10,6 | 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9
 // `);
 
-    const puzzle: Puzzle = parsePuzzle(`10x10
-1,2  1,5  | 1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5
-2,9  4,10 | 1,9 1,10 2,10 3,9 3,10 4,9 5,9 5,10 6,9 6,10 7,10 8,10
-3,2  3,4  | 3,3
-2,7  4,8  | 3,6 3,7 3,8
-6,1  9,1  | 3,1 4,1 4,2 4,3 4,4 5,1 5,2 5,3 6,2 7,1 7,2 8,1 8,2 8,3 8,4 8,5 8,6
-5,4  5,6  | 4,5 5,5 6,4 6,5 6,6
-6,8  8,7  | 4,6 4,7 5,7 5,8 6,7 7,6 7,7 7,8 8,8
-7,3  7,5  | 6,3 7,4
-8,9 10,10 | 7,9 9,9 9,10
-9,3  10,6 | 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9
-`);
 
+//     // output area for printing
+//     const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
+//     // canvas for drawing
+//     const canvas: HTMLElement|null = document.getElementById('canvas');
+//     if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
 
-    // output area for printing
-    const outputArea: HTMLElement = document.getElementById('outputArea') ?? assert.fail('missing output area');
-    // canvas for drawing
-    const canvas: HTMLElement|null = document.getElementById('canvas');
-    if ( ! (canvas instanceof HTMLCanvasElement)) { assert.fail('missing drawing canvas'); }
+//     drawPuzzle(canvas, puzzle);
 
-    drawPuzzle(canvas, puzzle);
+//     // for (let row = 0; row < 10; row += 1) {
+//     //     for (let col = 0; col < 10; col += 1) {
+//     //         drawStar(canvas, row, col, puzzle);
+//     //     }
+//     // }
 
-    // for (let row = 0; row < 10; row += 1) {
-    //     for (let col = 0; col < 10; col += 1) {
-    //         drawStar(canvas, row, col, puzzle);
-    //     }
-    // }
-
-    // drawBlankBoard(canvas, puzzle);
+//     // drawBlankBoard(canvas, puzzle);
     
-    // // when the user clicks on the drawing canvas...
+//     // // when the user clicks on the drawing canvas...
 
-    canvas.addEventListener('click', (event: MouseEvent) => {
-        // drawBox(canvas, event.offsetX, event.offsetY);
-        const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, puzzle);
-        // alert(`row: ${row}, col: ${col}`);
+//     canvas.addEventListener('click', (event: MouseEvent) => {
+//         // drawBox(canvas, event.offsetX, event.offsetY);
+//         const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, puzzle);
+//         // alert(`row: ${row}, col: ${col}`);
 
         
-        // drawCircle(canvas, row, col, "red");
-        eraseStar(canvas, row, col, puzzle);
-        // drawCell(canvas, row, col, puzzle);
-    });
+//         // drawCircle(canvas, row, col, "red");
+//         eraseStar(canvas, row, col, puzzle);
+//         // drawCell(canvas, row, col, puzzle);
+//     });
 
     
 
 
-    // add initial instructions to the output area
-    printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
-}
-
-const PORT = 8789;
-
-/**
- *
- */
-// async function draw(canvas: HTMLCanvasElement ): Promise<void> {
-//     alert("gurt");
+//     // add initial instructions to the output area
+//     printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 // }
 
-// // alert('Response data:');
+// const PORT = 8789;
+
+// /**
+//  *
+//  */
+// // async function draw(canvas: HTMLCanvasElement ): Promise<void> {
+// //     alert("gurt");
+// // }
+
+// // // alert('Response data:');
+// // async function sendRequest(): Promise<void> {
+// //     try {
+// //         const response = await fetch(`/puzzle`, {
+// //             method: 'GET', // or 'GET', 'PUT', 'DELETE'
+// //         });
+        
+// //         if (!response.ok) {
+// //             alert("baboo!!");
+// //             throw new Error(`HTTP error! status: ${response.status}`);
+// //         }
+// //             // const data = await fs.promises.readFile("./puzzles/kd-1-1-1.starb", 'utf-8');
+// //             // // drawBlankBoard(canvas, parsePuzzle(data));
+// //             // alert(data);
+  
+// //       alert('Response data: bababa');
+// //       const data = response.json();
+// //       alert('Response data: babooo' + data);
+// //     } catch (error) {
+// //         alert('Response data: bad' + error);
+// //         console.error('Error sending request:', error);
+// //     }
+// // }
 // async function sendRequest(): Promise<void> {
 //     try {
-//         const response = await fetch(`/puzzle`, {
-//             method: 'GET', // or 'GET', 'PUT', 'DELETE'
-//         });
-        
-//         if (!response.ok) {
-//             alert("baboo!!");
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
-//             // const data = await fs.promises.readFile("./puzzles/kd-1-1-1.starb", 'utf-8');
-//             // // drawBlankBoard(canvas, parsePuzzle(data));
-//             // alert(data);
-  
-//       alert('Response data: bababa');
-//       const data = response.json();
-//       alert('Response data: babooo' + data);
-//     } catch (error) {
-//         alert('Response data: bad' + error);
-//         console.error('Error sending request:', error);
+//       const res = await fetch('http://localhost:8789/puzzle');
+//       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//       const data = await res.text();      // matches the JSON we now send
+//       alert(data);
+//     } catch (err) {
+//       alert('Fetch failed: ' + err);
 //     }
-// }
-async function sendRequest(): Promise<void> {
-    try {
-      const res = await fetch('http://localhost:8789/puzzle');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.text();      // matches the JSON we now send
-      alert(data);
-    } catch (err) {
-      alert('Fetch failed: ' + err);
-    }
-  }
-// try{
-// const data = await fs.promises.readFile("../puzzles/kd-1-1-1.starb", 'utf-8');
-// // drawBlankBoard(canvas, parsePuzzle(data));
-// alert(data);}
-// catch (err){
-//     alert(err);
-// }
-// await sendRequest(); 
-main();
+//   }
+// // try{
+// // const data = await fs.promises.readFile("../puzzles/kd-1-1-1.starb", 'utf-8');
+// // // drawBlankBoard(canvas, parsePuzzle(data));
+// // alert(data);}
+// // catch (err){
+// //     alert(err);
+// // }
+// // await sendRequest(); 
+// main();

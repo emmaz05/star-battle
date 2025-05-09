@@ -22,8 +22,6 @@ import { drawPuzzle, gridCoords } from './drawing.js';
 const PUZZLE = `kd-1-1-1`;
 const PORT = 8789;
 
-// see example-page.ts for an example of an interactive web page
-
 /**
  * Sends a request to the server for the text of a blank puzzle
  * @returns the string representing the requested empty puzzle if possible, throws error otherwise
@@ -65,9 +63,7 @@ async function main(): Promise<void> {
     
     // when the user clicks on the drawing canvas...
     canvas.addEventListener('click', (event: MouseEvent) => {
-        // drawBox(canvas, event.offsetX, event.offsetY);
         const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, client.getState());
-        // alert(`row: ${row}, col: ${col}`);
 
         const cell = client.getState().getCellAt(row, col);
 
@@ -80,8 +76,6 @@ async function main(): Promise<void> {
         }
         
         if (client.checkSolved()) printOutput(outputArea, 'YOU HAVE JUST SOLVED THE PUZZLE. >:)))');
-        // eraseStar(canvas, row, col, puzzle);
-        // drawCell(canvas, row, col, puzzle);
     });
 }
 
