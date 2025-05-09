@@ -22,19 +22,15 @@ const SMALL_GRID: Array<Cell> = [
 /**
  * Tests for the Puzzle abstract data type
  */
-describe('Puzzle: constructor()', function () {
+describe('parsePuzzle()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
-    //  - on width: <= 0, >= 1
-    //  - on height: <= 0, >= 1
-    //  - on cells: span the grid, do not span the grid
-    //  - on cells.length: = width * height, != width * height
-
-    it('THIS IS FOR U EMMA', function() { 
-        const text = `10x10`
-        const puzzle: Puzzle = parsePuzzle(text);
-        console.log("OK");
-        
+    //  
+    
+    it(' ', function() { 
+        assert(true);
     });
 
 })

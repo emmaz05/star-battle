@@ -16,8 +16,7 @@ const SMALL_GRID: Array<Cell> = [
     {row: 2, col: 0, regionId: 2, state: CellState.Empty},
     {row: 2, col: 1, regionId: 2, state: CellState.Empty},
     {row: 2, col: 2, regionId: 1, state: CellState.Star}
-]
-
+];
 
 
 function addStars(puzzle: Puzzle, positions: Array<[number, number]>): Puzzle {
@@ -77,6 +76,8 @@ const SOLVED_KD_1_1_1: Puzzle = addStars(KD_1_1_1, [
  * Tests for the Puzzle abstract data type
  */
 describe('Puzzle: constructor()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - on width: <= 0, >= 1
@@ -154,6 +155,8 @@ describe('Puzzle: constructor()', function () {
 })
 
 describe('Puzzle: isEmptyAt()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - row: valid, out of puzzle bounds
@@ -167,14 +170,14 @@ describe('Puzzle: isEmptyAt()', function () {
         
         try {
             const isEmpty = puzzle.isEmptyAt(3, 1);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
 
         try {
             const isEmpty = puzzle.isEmptyAt(-4, 1);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
@@ -186,14 +189,14 @@ describe('Puzzle: isEmptyAt()', function () {
         const puzzle: Puzzle = new Puzzle(3, 3, SMALL_GRID);
         try {
             const isEmpty = puzzle.isEmptyAt(0, 4);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
 
         try {
             const isEmpty = puzzle.isEmptyAt(2, -2);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
@@ -208,7 +211,7 @@ describe('Puzzle: isEmptyAt()', function () {
                 assert(
                     puzzle.isEmptyAt(cell.row, cell.col), 
                     `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
-                )
+                );
             }
         }
     });
@@ -229,6 +232,8 @@ describe('Puzzle: isEmptyAt()', function () {
 })
 
 describe('Puzzle: hasStarAt()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - row: valid, out of puzzle bounds
@@ -282,7 +287,7 @@ describe('Puzzle: hasStarAt()', function () {
                 assert(
                     puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected true for star cell (${cell.row}, ${cell.col}) but got false.`
-                )
+                );
             }
         }
     });
@@ -296,13 +301,15 @@ describe('Puzzle: hasStarAt()', function () {
                 assert(
                     !puzzle.hasStarAt(cell.row, cell.col), 
                     `Expected false for empty cell (${cell.row}, ${cell.col}) but got true.`
-                )
+                );
             }
         }
     });
 })
 
 describe('Puzzle: addStar()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - row: valid, out of puzzle bounds
@@ -315,14 +322,14 @@ describe('Puzzle: addStar()', function () {
         
         try {
             const newPuzzle: Puzzle = puzzle.addStar(7, 2);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
 
         try {
             const newPuzzle: Puzzle = puzzle.addStar(-2, 0);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
@@ -356,7 +363,7 @@ describe('Puzzle: addStar()', function () {
                 assert(
                     newPuzzle.hasStarAt(cell.row, cell.col), 
                     `Expected true for empty cell (${cell.row}, ${cell.col}) but got false.`
-                )
+                );
             }
         }
     });
@@ -378,6 +385,8 @@ describe('Puzzle: addStar()', function () {
 })
 
 describe('Puzzle: removeStar()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - row: valid, out of puzzle bounds
@@ -389,14 +398,14 @@ describe('Puzzle: removeStar()', function () {
         
         try {
             const newPuzzle: Puzzle = puzzle.removeStar(7, 2);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
 
         try {
             const newPuzzle: Puzzle = puzzle.removeStar(-2, 0);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
@@ -451,6 +460,8 @@ describe('Puzzle: removeStar()', function () {
 })
 
 describe('Puzzle: getCellAt()', function() {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - row: valid, out of puzzle bounds
@@ -461,14 +472,14 @@ describe('Puzzle: getCellAt()', function() {
         
         try {
             const cell: Cell = puzzle.getCellAt(4, 2);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
 
         try {
             const cell: Cell = puzzle.getCellAt(-1, 1);
-            assert(false, "Expected error when row index is not in bounds was not thrown.")
+            assert(false, "Expected error when row index is not in bounds was not thrown.");
         } catch (e) {
             assert(true);
         }
@@ -501,24 +512,26 @@ describe('Puzzle: getCellAt()', function() {
                 returnedCell,
                 cell,
                 `Expected ${JSON.stringify(cell)} but got ${JSON.stringify(returnedCell)}`
-            )
+            );
         }
     });
 
 })
 
 describe('Puzzle: isSolved()', function () {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
     //
     // Partitions:
     //  - on outputs: true, false
     //  - FOR FALSE OUTPUTS, FALSE BECAUSE:
-    //      - no stars in the grid
-    //      - row with not exactly 2 stars
-    //      - column with not exactly 2 stars
-    //      - region with not exactly 2 star
-    //      - stars adjacent
+    //      - empty puzzle
+    //      - unsolved rows
+    //      - unsolved columns
+    //      - unsolved regions
+    //      - neighboring stars
 
-    it('Covers: expected true', async function() { 
+    it('Covers: expected true', function() { 
         assert(SOLVED_KD_1_1_1.isSolved(), "Expected solved puzzle to be solved.");
     });
 
@@ -526,24 +539,77 @@ describe('Puzzle: isSolved()', function () {
         assert(!KD_1_1_1.isSolved(), "Expected empty grid to be unsolved.");
     });
 
-    it('Covers: expected false - unsolved row', function() { 
+    it('Covers: expected false - unsolved rows', function() { 
+        let puzzle: Puzzle = addStars(SOLVED_KD_1_1_1, [[0, 8]]);
+        puzzle = removeStars(puzzle, [[1, 8]]);
 
-        console.log("KD_1_1_1", SOLVED_KD_1_1_1.toString());
-
-        const emptyRow: Puzzle = removeStars(SOLVED_KD_1_1_1, [[0, 1], [0, 4]]);
-        assert(!emptyRow.isSolved(), "Empty to row should mean puzzle is unsolved.");
-
-        const overflowingRow: Puzzle = addStars(SOLVED_KD_1_1_1, [[0, 0]]);
-        assert(!overflowingRow.isSolved(), "Row with too many stars should mean puzzle is unsolved.");
-
+        assert(!puzzle.isSolved(), "Expected unsolved rows to produce unsolved puzzle.");
     });
 
-    it('Covers: expected false - unsolved column', function() { 
-        throw new Error('Not implemented');
+    it('Covers: expected false - unsolved columns', function() { 
+        let puzzle: Puzzle = addStars(SOLVED_KD_1_1_1, [[0, 2]]);
+        puzzle = removeStars(puzzle, [[0, 1]]);
+
+        assert(!puzzle.isSolved(), "Expecxted unsolved columns to produce unsolved puzzle.");
     });
 
     it('Covers: expected false - unsolved region', function() { 
-        throw new Error('Not implemented');
+        let puzzle: Puzzle = addStars(SOLVED_KD_1_1_1, [[9, 8], [1, 9]]);
+        puzzle = removeStars(puzzle, [[9, 9], [1, 8]]);
+
+        assert(!puzzle.isSolved(), "Expected unsolved regions to produce unsolved puzzle.");
+    });
+
+    it('Covers: expected false - neighboring stars', function() { 
+        let puzzle: Puzzle = addStars(SOLVED_KD_1_1_1, [[8, 5], [9, 2]]);
+        puzzle = removeStars(puzzle, [[8, 2], [9, 5]]);
+
+        assert(!puzzle.isSolved(), "Expected unsolved regions to produce unsolved puzzle.");
+    });
+    
+})
+
+describe('Puzzle: getRegions()', function() {
+    // Testing strategy:
+    // Cover input space with partitions, and test inputs within each subdomain.
+    //
+    // Partitions:
+    // - number of regions: 1, > 1
+
+    it('Covers: number of regions = 1', function() { 
+        const SINGLE_REGION: Array<Cell> = [
+            {row: 0, col: 0, regionId: 0, state: CellState.Empty},
+            {row: 0, col: 1, regionId: 0, state: CellState.Star},
+            {row: 0, col: 2, regionId: 0, state: CellState.Empty},
+            {row: 1, col: 0, regionId: 0, state: CellState.Star}, //
+            {row: 1, col: 1, regionId: 0, state: CellState.Empty},//
+            {row: 1, col: 2, regionId: 0, state: CellState.Empty},//
+            {row: 2, col: 0, regionId: 0, state: CellState.Empty},
+            {row: 2, col: 1, regionId: 0, state: CellState.Empty},
+            {row: 2, col: 2, regionId: 0, state: CellState.Star}
+        ];
+
+        const puzzle: Puzzle = new Puzzle(3, 3, SINGLE_REGION);
+        const regionMap: Map<number, Array<Cell>> = puzzle.getRegions();
+        assert.equal(regionMap.size, 1, "Expected only one region in the map.");
+
+        const region = regionMap.get(0) ?? assert.fail("Could not get region 0.");
+        for (const cell of puzzle.getGrid()) {
+            assert(region.includes(cell), `Expected cell (${cell.row}, ${cell.col}) to be in region 0`);
+        }
+
+    });
+
+    it('Covers: number of regions > 1', function() { 
+        const regionMap: Map<number, Array<Cell>> = SOLVED_KD_1_1_1.getRegions();
+        for (const cell of SOLVED_KD_1_1_1.getGrid()) {
+            const region = regionMap.get(cell.regionId);
+            if (region) {
+                assert(region.includes(cell), `Expected cell (${cell.row}, ${cell.col}) to be in region ${cell.regionId}`);
+            } else {
+                assert(false, `Expected cell (${cell.row}, ${cell.col}) to be in region ${cell.regionId}`);
+            }
+        }
     });
 })
 

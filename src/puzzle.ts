@@ -136,7 +136,7 @@ export class Puzzle {
      * Must be a non-negative integer less than this.height
      * @returns the number of stars in the row-th row
      */
-    public starsInRow(row: number): number {
+    private starsInRow(row: number): number {
         // Get the indexes of the row to tally up
         const startIndex = this.width * row;
         const endIndex = this.width * (row + 1);
@@ -162,7 +162,7 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * @returns the number of stars in the col-th column
      */
-    public starsInColumn(col: number): number {
+    private starsInColumn(col: number): number {
         // Get the indexes of the column to tally up
         const startIndex = col;
         const endIndex = this.width * this.height
@@ -189,7 +189,7 @@ export class Puzzle {
      * @returns the number of stars in the region containing
      * cell at position (seedRow, seedCol)
      */
-    public starsInRegion(regionId: number): number {
+    private starsInRegion(regionId: number): number {
         // Get all the cells in the region
         const cellsInRegion: Array<Cell> = this.regions.get(regionId) ?? assert.fail("Invalid region ID");
 
@@ -459,7 +459,18 @@ export class Puzzle {
 
     }
 
+    /**
+     * Gets the grid of cells in the puzzle.
+     * 
+     * @returns a flattned array of cells representing the puzzle grid
+     */
+    public getGrid(): Array<Cell> {
+        return [...this.grid];
+    }
 
+    /**
+     * @inheritdoc
+     */
     public toString(): string {
 
         const showRegions = false;
@@ -476,7 +487,5 @@ export class Puzzle {
         }
         return str;
     }
-
-
 
 }
