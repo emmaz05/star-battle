@@ -1,4 +1,3 @@
-import assert from 'node:assert';
 import express, { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import * as fs from 'fs';
@@ -7,6 +6,13 @@ import { Server } from 'node:http';
  * HTTP web game server.
  */
 export class WebServer {
+    /**
+     * AF(app, server) = A server using {app} to accept requests from {server}
+     * 
+     * Rep Invariant: None
+     * 
+     * SRE: all fields private and no methods return mutable fields
+     */
 
     private readonly app;
     private server: Server | undefined;
