@@ -8,6 +8,8 @@
 //   see "How to test: web server" on the *Testing* page of the project handout.
 
 import assert from 'node:assert';
+import { Server } from 'node:http';
+import { WebServer } from '../src/starb-server.js';
 
 // Testing strategy
 //  -   Partition on existing puzzle file vs nonexistent file
@@ -31,6 +33,9 @@ async function sendRequest(puzzle: string): Promise<string> {
   }
 
 describe('server', async function() {
+    const server = new WebServer(8789);
+    server.start()
+    
     const puzzleFile1 = "kd-1-1-1";
     const expected1 = `10x10
  | 1,2  1,5  1,1 1,3 1,4 1,6 1,7 1,8 2,1 2,2 2,3 2,4 2,5 2,6 2,8 3,5

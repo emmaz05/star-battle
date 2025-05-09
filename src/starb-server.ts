@@ -26,7 +26,7 @@ import { Server } from 'node:http';
 /**
  * HTTP web game server.
  */
-class WebServer {
+export class WebServer {
 
     private readonly app;
     private server: Server | undefined;
