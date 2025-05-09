@@ -31,7 +31,8 @@ describe('Client', function () {
      *  partition on puzzle:
      *      - puzzle is empty
      *      - puzzle is in progress
-     *      - puzzle is solved
+     *      - puzzle is solved for the first time
+     *      - puzzle is solved again after previously being solved
      */
 
     
@@ -75,7 +76,7 @@ describe('Client', function () {
         assert.strictEqual(client.checkSolved(), false, 'blank puzzle is not solved');
     }); 
 
-    it('addStar: dimensions are in bounds, square at row, col has star; removeStar: dimensions are in bounds, square at row, col is empty; checkSolved: puzzle is solved', function() { 
+    it('addStar: dimensions are in bounds, square at row, col has star; removeStar: dimensions are in bounds, square at row, col is empty; checkSolved: puzzle is solved for the first time, puzzle is solved again after previously being solved', function() { 
         const client = new Client(blank);
         client.addStar(0, 1);
         assert.throws(() => client.addStar(0, 1), 'cannot add star if that square already has a star');
