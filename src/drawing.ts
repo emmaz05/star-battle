@@ -1,6 +1,6 @@
+
 import { Puzzle, Cell, CellState } from './puzzle.js';
 // example of how to draw a puzzle with regions!
-
 
 import assert from 'node:assert';
 
@@ -30,41 +30,6 @@ export function colorToHexColor(rgb: Color): string {
     );
    }
    
-
-// SHAPE DRAWING
-// ==========================================================================
-
-/**
- * Draw a circle at the specified canvas space x-y coordinates
- * 
- * @param canvas canvas to draw on
- * @param x x coordinate of center of circle
- * @param y y coordinate of center of circle
- * @param color color to fill circle background
- * @param radius positive number describing the circle radius
- */
-export function drawCircle(canvas: HTMLCanvasElement, x: number, y: number, color: string, radius: number): void {
-    const context = canvas.getContext('2d');
-    assert(context !== null, 'unable to get canvas drawing context');
-    if (context !== null) {
-        context.save();
-
-        // translate to (x, y) for drawing
-        context.translate(x, y);
-
-        // draw the circle
-        context.beginPath();
-        context.arc(0, 0, radius, 0, 2 * Math.PI); // Circle centered at (0, 0) with radius BOX_SIZE/2
-        context.fillStyle = color; // Fill color
-        context.fill();
-
-        context.lineWidth = CELL_BORDER;
-        context.strokeStyle = color;
-        context.stroke();
-
-        context.restore();
-    }
-}
 
 
 // COORDINATE SPACE CONVERSION UTILITIES
@@ -133,7 +98,6 @@ export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, p
     const backgroundColor = hueToRGB(hue);
 
     const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
-    // drawCircle(canvas, x, y, backgroundColor, STAR_RADIUS + 1);
     drawCell(canvas, row, col, puzzle, backgroundColor);
 }
 
@@ -148,7 +112,6 @@ export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, p
 export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
 
     const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
-    // drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
     const CELL_WIDTH = canvas.width / puzzle.width;
     const CELL_HEIGHT = canvas.height / puzzle.height;
     const INNER_DIV = BOX_SIZE / 2;

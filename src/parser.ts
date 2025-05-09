@@ -77,8 +77,7 @@ export function parsePuzzle(input: string): Puzzle {
                 };
                 cells.push(cell);
             }
-        }
-        
+        }  
     }
 
     // Create and return the Puzzle
