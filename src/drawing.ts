@@ -121,7 +121,8 @@ export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, p
     const backgroundColor = hueToRGB(hue);
 
     const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
-    drawCircle(canvas, x, y, backgroundColor, STAR_RADIUS);
+    // drawCircle(canvas, x, y, backgroundColor, STAR_RADIUS + 1);
+    drawCell(canvas, row, col, puzzle, backgroundColor);
 }
 
 /**
@@ -135,7 +136,34 @@ export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, p
 export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
 
     const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
-    drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
+    // drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+
+    const outerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/8;
+    const innerRadius: number = (CELL_WIDTH + CELL_HEIGHT)/16;
+
+    const ctx = canvas.getContext('2d');
+    assert(ctx !== null, 'unable to get canvas drawing context');
+    const step = Math.PI / 5;
+    let rotation = -Math.PI / 2; // Start at the top point
+
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const angle = rotation + i * step;
+        const sx = x + radius * Math.cos(angle);
+        const sy = y + radius * Math.sin(angle);
+        if (i === 0) {
+            ctx.moveTo(sx, sy);
+        } else {
+            ctx.lineTo(sx, sy);
+        }
+    }
+
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
 }
 
 
@@ -301,5 +329,3 @@ export function drawBlankBoard(canvas: HTMLCanvasElement, board: Puzzle): void {
     // add initial instructions to the output area
     // printOutput(outputArea, `Click in the canvas above to draw a box centered at that point`);
 }
-
-// main();
