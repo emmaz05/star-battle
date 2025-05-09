@@ -30,9 +30,9 @@ export enum CellState { Empty, Star }
  */
 export class Puzzle { 
     // Abstraction Function:
-    //  AF(grid, regions) = the Star Battle puzzle thta has a grid of 
+    //  AF(grid, regions) = the Star Battle puzzle that has a grid of 
     //      puzzle cells stored in grid in row-major order, and regions 
-    //      detailed by a a region id to list of cells mapping regions 
+    //      detailed by a region id to lists of cells mapping regions 
     // Representation Invariant:
     //      - this.height and this.width are positive integers
     //      - this.grid.length = this.height * this.width
@@ -206,6 +206,16 @@ export class Puzzle {
         return total;
     }
 
+    /**
+     * Checks if a given cell has a star adjacent to it.
+     * 
+     * @param row the row index of the cell to change.
+     * Must be a non-negative integer less than this.height
+     * @param col the column index of the cell to change.
+     * Must be a non-negative integer less than this.width
+     * @returns true if there is a star adjacent to cell at (row, col),
+     * false otherwise
+     */
     private hasStarAdjacent(row: number, col: number): boolean {
 
         // Go over all the cells in the 3x3 region around (row, col)
@@ -472,20 +482,13 @@ export class Puzzle {
      * @inheritdoc
      */
     public toString(): string {
-
-        const showRegions = false;
-        let cellRep: string | number = '-';
-
-        let str = `Puzzle ${this.height}x${this.width}:\n`;
-        for (let row = 0; row < this.height; row++) {
-            for (let col = 0; col < this.width; col++) {
-                const cell: Cell = this.getCellAt(row, col);
-                if (showRegions) cellRep = cell.regionId;
-                str += cell.state === CellState.Star ? `[${cellRep}]` : ` ${cellRep} `;
-            }
-            str += '\n';
+        let puzzleString = "\n";
+        for (const cell of this.grid) {
+            const cellIndex = this.coordsToIndex(cell.row, cell.col);
+            if (cellIndex % (this.width) === 0 && cellIndex !== 0) { puzzleString += '\n'; }
+            puzzleString += cell.state === CellState.Star ? '[X]' : '[ ]';
         }
-        return str;
+        return puzzleString;
     }
 
 }

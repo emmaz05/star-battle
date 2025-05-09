@@ -608,3 +608,32 @@ describe('Puzzle: getGrid()', function() {
 
     
 })
+
+describe('Puzzle: toString()', function() {
+    // Testing strategy:
+    // because of how simple this function is - and the fact is
+    // used mainly for debugging - run it against some grids and
+    // verify answers are what is expected
+
+    it('Make sure string representation is sensible', function() { 
+        const expectedSmall = `
+[ ][X][ ]
+[X][ ][ ]
+[ ][ ][X]`
+        assert(SMALL_PUZZLE.toString() === expectedSmall, "Puzzle grid string representation for small puzzle not as expected");
+
+        const expectedKD111 = `
+[ ][X][ ][ ][X][ ][ ][ ][ ][ ]
+[ ][ ][ ][ ][ ][ ][X][ ][X][ ]
+[ ][X][ ][X][ ][ ][ ][ ][ ][ ]
+[ ][ ][ ][ ][ ][ ][ ][X][ ][X]
+[ ][ ][ ][X][ ][X][ ][ ][ ][ ]
+[X][ ][ ][ ][ ][ ][ ][X][ ][ ]
+[ ][ ][X][ ][X][ ][ ][ ][ ][ ]
+[ ][ ][ ][ ][ ][ ][X][ ][X][ ]
+[X][ ][X][ ][ ][ ][ ][ ][ ][ ]
+[ ][ ][ ][ ][ ][X][ ][ ][ ][X]`;
+        assert(SOLVED_KD_1_1_1.toString() === expectedKD111, "Puzzle grid string representation for solved KD-1-1-1 not as expected");
+    });
+
+})
