@@ -1,8 +1,7 @@
 import assert from 'assert';
 import { Puzzle, Cell, CellState } from '../src/puzzle.js'
 import { parsePuzzle } from '../src/parser.js';
-import fs from 'fs';
-// import { describe, it } from 'mocha';
+
 
 
 /**
