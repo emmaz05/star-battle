@@ -7,7 +7,7 @@
 //   with the exception of node:assert.
 
 import assert from 'node:assert';
-import { drawStar, drawBlankBoard, cellCoords, eraseStar, drawCell, drawPuzzle } from './drawing.js';
+import { drawStar, drawBlankBoard, gridCoords, eraseStar, drawCell, drawPuzzle } from './drawing.js';
 import { Cell, CellState } from './puzzle.js';
 import { Puzzle } from './puzzle.js';
 import { parsePuzzle } from './parser.js';
@@ -33,40 +33,40 @@ const COLORS: Array<string> = [
 // semitransparent versions of those colors
 const BACKGROUNDS = COLORS.map((color) => color + '60');
 
-/**
- * Draw a black square filled with a random color.
- * 
- * Note: this function is designed to draw on a <canvas> element in the browser,
- *   but we can adjust its signature so that it can be tested with Mocha in Node.
- *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
- * 
- * @param canvas canvas to draw on
- * @param x x position of center of box
- * @param y y position of center of box
- */
-function drawBox(canvas: HTMLCanvasElement, x: number, y: number): void {
-    const context = canvas.getContext('2d');
-    assert(context, 'unable to get canvas drawing context');
+// /**
+//  * Draw a black square filled with a random color.
+//  * 
+//  * Note: this function is designed to draw on a <canvas> element in the browser,
+//  *   but we can adjust its signature so that it can be tested with Mocha in Node.
+//  *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
+//  * 
+//  * @param canvas canvas to draw on
+//  * @param x x position of center of box
+//  * @param y y position of center of box
+//  */
+// function drawBox(canvas: HTMLCanvasElement, x: number, y: number): void {
+//     const context = canvas.getContext('2d');
+//     assert(context, 'unable to get canvas drawing context');
 
-    // save original context settings before we translate and change colors
-    context.save();
+//     // save original context settings before we translate and change colors
+//     context.save();
 
-    // translate the coordinate system of the drawing context:
-    //   the origin of `context` will now be (x,y)
-    context.translate(x, y);
+//     // translate the coordinate system of the drawing context:
+//     //   the origin of `context` will now be (x,y)
+//     context.translate(x, y);
 
-    // draw the outer outline box centered on the origin (which is now (x,y))
-    context.strokeStyle = 'black';
-    context.lineWidth = 2;
-    context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
+//     // draw the outer outline box centered on the origin (which is now (x,y))
+//     context.strokeStyle = 'black';
+//     context.lineWidth = 2;
+//     context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
 
-    // fill with a random semitransparent color
-    context.fillStyle = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)] ?? assert.fail();
-    context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
+//     // fill with a random semitransparent color
+//     context.fillStyle = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)] ?? assert.fail();
+//     context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
 
-    // reset the origin and styles back to defaults
-    context.restore();
-}
+//     // reset the origin and styles back to defaults
+//     context.restore();
+// }
 
 /**
  * Print a message by appending it to an HTML element.
@@ -150,7 +150,7 @@ async function main(): Promise<void> {
 
     canvas.addEventListener('click', (event: MouseEvent) => {
         // drawBox(canvas, event.offsetX, event.offsetY);
-        const [row, col] = cellCoords(canvas, event.offsetX, event.offsetY, puzzle);
+        const [row, col] = gridCoords(canvas, event.offsetX, event.offsetY, puzzle);
         // alert(`row: ${row}, col: ${col}`);
 
         

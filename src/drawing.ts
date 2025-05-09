@@ -8,11 +8,12 @@ import assert from 'node:assert';
 
 const BOX_SIZE = 16;
 const CELL_BORDER = 0.2;
-const CELL_SIZE = 40; 
-const STAR_RADIUS = 6;
 const HUE_DEGREES = 360;
 const HUE_SECTION = 60;
 const PIXEL_MAX = 255;
+
+const STAR_RADIUS = 5;
+const STAR_COLOR = 'black';
 
 // mapping of regions to their colors
 const regionColors = new Map<number, Color>();
@@ -22,50 +23,13 @@ const regionColors = new Map<number, Color>();
 // ==========================================================================
 
 /**
- * Draw a black square filled with a random color.
- * 
- * Note: this function is designed to draw on a <canvas> element in the browser,
- *   but we can adjust its signature so that it can be tested with Mocha in Node.
- *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
- * 
- * @param canvas canvas to draw on
- * @param x x position of center of box
- * @param y y position of center of box
- * @param color to fill box background
- */
-export function drawBox(canvas: HTMLCanvasElement, x: number, y: number, color: string): void {
-    const context = canvas.getContext('2d');
-    assert(context !== null, 'unable to get canvas drawing context');
-    if (context !== null) {
-    // save original context settings before we translate and change colors
-    context.save();
-
-    // translate the coordinate system of the drawing context:
-    //   the origin of `context` will now be (x,y)
-    context.translate(x, y);
-
-    // draw the outer outline box centered on the origin (which is now (x,y))
-    context.strokeStyle = 'black';
-    context.lineWidth = CELL_BORDER;
-    context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-    // fill with a random semitransparent color
-    context.fillStyle = color;
-    context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-    // reset the origin and styles back to defaults
-    context.restore();
-    }
-}
-
-/**
- * Draw a circle at the specified coordinates
+ * Draw a circle at the specified canvas space x-y coordinates
  * 
  * @param canvas canvas to draw on
  * @param x x coordinate of center of circle
  * @param y y coordinate of center of circle
  * @param color color to fill circle background
- * @param radius positive numbe
+ * @param radius positive number describing the circle radius
  */
 export function drawCircle(canvas: HTMLCanvasElement, x: number, y: number, color: string, radius: number): void {
     const context = canvas.getContext('2d');
@@ -91,19 +55,21 @@ export function drawCircle(canvas: HTMLCanvasElement, x: number, y: number, colo
 }
 
 
-// CELL DRAWING UTILITIES
+// COORDINATE SPACE CONVERSION UTILITIES
 // ==========================================================================
 
 /**
- * Clamps the coordinates to the center of a cell in the grid
+ * Converts x-y canvas space coordinates to the corresponding row-col puzzle grid
+ * space coordinates.
  * 
  * @param canvas the canvas to draw on
- * @param x the x coordinate to clamp
- * @param y the y coordinate to clamp
- * @param puzzle the puzzle whose grid to clamp to
- * @returns the clamped coordinates in row-col format (origin is top left)
+ * @param x the x coordinate in canvas space
+ * @param y the y coordinate in canvas
+ * @param puzzle the puzzle whose grid space to convert to
+ * @returns the row-col puzzle grid space coordinates corresponding to (x, y)
+ * in canvas space
  */
-export function cellCoords(canvas: HTMLCanvasElement, x: number, y: number, puzzle: Puzzle): [number, number] {
+export function gridCoords(canvas: HTMLCanvasElement, x: number, y: number, puzzle: Puzzle): [number, number] {
     const CELL_WIDTH = canvas.width / puzzle.width;
     const CELL_HEIGHT = canvas.height / puzzle.height;
 
@@ -114,56 +80,84 @@ export function cellCoords(canvas: HTMLCanvasElement, x: number, y: number, puzz
    
 }
 
+
 /**
- * Converts a hue value to an RGB color string
+ * Converts row-col puzzle grid space coordinates to the corresponding x-y canvas
+ * space coordinates.
  * 
- * @param hue the hue value (0-360)
- * @returns the RGB color string in hex format
+ * @param canvas the canvas to draw on
+ * @param row the row coordinate in puzzle grid space
+ * @param col the col coordinate in puzzle grid space
+ * @param puzzle the puzzle whose grid space to convert to
+ * @returns the x-y canvas space coordinates corresponding to (row, col)
+ * in canvas space
  */
-export function hueToRGB(hue: number): string {
-    // Ensure hue wraps around if it's out of bounds
-    hue = hue%HUE_DEGREES;
+export function canvasCoords(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): [number, number] {
+    const CELL_WIDTH = canvas.width / puzzle.width;
+    const CELL_HEIGHT = canvas.height / puzzle.height;
+    
+    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
+    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
+    return [x, y];
+}
 
-    // Convert HSL (hue, 100%, 50%) to RGB
-    const c = 1; // chroma = (1 - |2L - 1|) * S, with L = 0.5, S = 1
-    const x = c * (1 - Math.abs((hue / HUE_SECTION) % 2 - 1));
-    const m = 0; // we add this later but since L=0.5 and c=1, m=0
 
-    let r:number , g: number, b: number;
+// STAR DRAWING UTILITIES
+// ==========================================================================
 
-    if (hue < HUE_SECTION)      [r, g, b] = [c, x, 0];
-    else if (hue < 2 * HUE_SECTION)[r, g, b] = [x, c, 0];
-    else if (hue < 3 * HUE_SECTION)[r, g, b] = [0, c, x];
-    else if (hue < 4 * HUE_SECTION)[r, g, b] = [0, x, c];
-    else if (hue < 5 * HUE_SECTION)[r, g, b] = [x, 0, c];
-    else                           [r, g, b] = [c, 0, x];;
-    // Convert to 0–255 and return as hex color string
-    return colorToHexColor([
-        Math.round((r + m) * PIXEL_MAX),
-        Math.round((g + m) * PIXEL_MAX),
-        Math.round((b + m) * PIXEL_MAX)
-    ]);
+/**
+ * Erases a drawn star at the corresponding row-col coordinates
+ * 
+ * @param canvas the canvas to draw on
+ * @param row the row coordinate of the cell to de-star (puzzle grid space)
+ * @param col the column coordinate of the cell to de-star (puzzle grid space)
+ * @param puzzle the puzzle used in the drawing
+ */
+export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
+
+    const regionId = puzzle.getCellAt(row, col).regionId;
+    const regions: Map<number, Array<Cell>> = puzzle.getRegions();
+    const hue = (HUE_DEGREES / regions.size) * regionId;
+    const backgroundColor = hueToRGB(hue);
+
+    const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
+    drawCircle(canvas, x, y, backgroundColor, STAR_RADIUS);
 }
 
 /**
- * Draws a cell of the puzzle at the specified row and column coordinates
+ * Draws a star at the corresponding row-col coordinates
  * 
  * @param canvas the canvas to draw on
- * @param row the row coordinate of the cell
- * @param col the column coordinate of the cell
+ * @param row the row coordinate of the cell to star (puzzle grid space)
+ * @param col the column coordinate of the cell to star (puzzle grid space)
+ * @param puzzle the puzzle used in the drawing
+ */
+export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
+
+    const [x, y]: [number, number] = canvasCoords(canvas, row, col, puzzle);
+    drawCircle(canvas, x, y, STAR_COLOR, STAR_RADIUS);
+}
+
+
+// PUZZLE GRID DRAWING
+// ==========================================================================
+
+/**
+ * Draws a single cell of the grid, such that its row-col coordinates in Puzzle grid space
+ * get converted to the relevant x-y coordinates in canvas space.
+ * 
+ * @param canvas the canvas to draw on
+ * @param row the row coordinate of the cell (puzzle grid space)
+ * @param col the column coordinate of the cell (puzzle grid space)
  * @param puzzle the puzzle this cell belongs to
- * @param color the color of the cell to use
+ * @param color the color to use for the cell background
  */
 export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle, color: string): void {
-    
-    // const cell: Cell = puzzle.getCellAt(row, col);
     
     const CELL_WIDTH = canvas.width / puzzle.width;
     const CELL_HEIGHT = canvas.height / puzzle.height;
     const x = col * CELL_WIDTH + CELL_WIDTH / 2;
     const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
-    
-    // const color = regionColors.get(puzzle.getCellAt(row, col).regionId);
 
     const context = canvas.getContext('2d');
     assert(context !== null, 'unable to get canvas drawing context');
@@ -185,62 +179,11 @@ export function drawCell(canvas: HTMLCanvasElement, row: number, col: number, pu
     }
 }
 
-
-// STAR DRAWING UTILITIES
-// ==========================================================================
-
 /**
- * draws a circle in the middle of the specified square on the grid
- * @param canvas canvas to draw on
- * @param row row to draw on
- * @param col column to draw on
- * @param puzzle a puzzle board
- */
-export function eraseStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
-    
-    const CELL_WIDTH = canvas.width / puzzle.width;
-    const CELL_HEIGHT = canvas.height / puzzle.height;
-    
-    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
-    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-    const regionId = puzzle.getCellAt(row, col).regionId;
-    const regions: Map<number, Array<Cell>> = puzzle.getRegions();
-    const hue = (HUE_DEGREES / regions.size) * regionId;
-    const backgroundColor = hueToRGB(hue);
-
-    const radius = (CELL_WIDTH + CELL_HEIGHT) / BOX_SIZE + 1; 
-
-    drawCircle(canvas, x, y, backgroundColor, radius);
-}
-
-/**
- * draws a circle in the middle of the specified square on the grid
- * @param canvas canvas to draw on
- * @param row row to draw on
- * @param col column to draw on
- * @param puzzle a puzzle state
- */
-export function drawStar(canvas: HTMLCanvasElement, row: number, col: number, puzzle: Puzzle): void {
-
-    const CELL_WIDTH = canvas.width / puzzle.width;
-    const CELL_HEIGHT = canvas.height / puzzle.height;
-    
-    const x = col * CELL_WIDTH + CELL_WIDTH / 2;
-    const y = row * CELL_HEIGHT + CELL_HEIGHT / 2;
-
-    const radius = (CELL_WIDTH + CELL_HEIGHT) / BOX_SIZE; 
-    drawCircle(canvas, x, y, 'black', radius);
-}
-
-
-// PUZZLE GRID DRAWING
-// ==========================================================================
-
-/**
- * Draws given puzzle board exculding stars with regions having single, mutually distinct colors
- * @param canvas element of html
- * @param puzzle a puzzle board to draw
+ * Draws the grid of the a puzzle, with distinct colors for each region.
+ * 
+ * @param canvas the canvas to draw on 
+ * @param puzzle the puzzle to fit onto the canvas
  */
 export function drawGrid(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
     const regions: Map<number, Array<Cell>> = puzzle.getRegions();
@@ -254,26 +197,50 @@ export function drawGrid(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
             drawCell(canvas, cell.row, cell.col, puzzle, color);
         }
     }
-
 }
 
 /**
- * Given puzzle board, draws the board grid with stars in appropriate squares per puzzle state
- * Draws given puzzle board including stars in appropriate squares (per puzzle state) with regions having single, mutually distinct colors
- * @param canvas element of html
- * @param puzzle a puzzle board to draw
+ * Draws the entire puzzle grid state, including regions and stars.
+ * 
+ * @param canvas the canvas to draw on 
+ * @param puzzle the puzzle to fit onto the canvas
  */
 export function drawPuzzle(canvas: HTMLCanvasElement, puzzle: Puzzle): void {
     drawGrid(canvas, puzzle);
-    for (let row = 0; row < puzzle.height; row += 1) {
-        for (let col = 0; col < puzzle.width; col += 1) {
-            const cell = puzzle.getCellAt(row, col);
-            if (cell.state === CellState.Star) {
-                drawStar(canvas, row, col, puzzle);
-            }
-        }
+    for (const cell of puzzle.getGrid()) {
+        if (cell.state === CellState.Star) { drawStar(canvas, cell.row, cell.col, puzzle); }
     }
+}
 
+/**
+ * Converts a hue value to an RGB color string
+ * 
+ * @param hue the hue value (0-360)
+ * @returns the RGB color string in hex format
+ */
+export function hueToRGB(hue: number): string {
+    // Ensure hue wraps around if it's out of bounds
+    hue = hue%HUE_DEGREES;
+
+    // Convert HSL (hue, 100%, 50%) to RGB
+    const c = 1; // chroma = (1 - |2L - 1|) * S, with L = 0.5, S = 1
+    const x = c * (1 - Math.abs((hue / HUE_SECTION) % 2 - 1));
+    const m = 0; // we add this later but since L=0.5 and c=1, m=0
+
+    let r:number , g: number, b: number;
+
+    if (hue < HUE_SECTION)         [r, g, b] = [c, x, 0];
+    else if (hue < 2 * HUE_SECTION)[r, g, b] = [x, c, 0];
+    else if (hue < 3 * HUE_SECTION)[r, g, b] = [0, c, x];
+    else if (hue < 4 * HUE_SECTION)[r, g, b] = [0, x, c];
+    else if (hue < 5 * HUE_SECTION)[r, g, b] = [x, 0, c];
+    else                           [r, g, b] = [c, 0, x];;
+    // Convert to 0–255 and return as hex color string
+    return colorToHexColor([
+        Math.round((r + m) * PIXEL_MAX),
+        Math.round((g + m) * PIXEL_MAX),
+        Math.round((b + m) * PIXEL_MAX)
+    ]);
 }
 
 /**
