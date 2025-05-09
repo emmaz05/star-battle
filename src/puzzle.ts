@@ -56,7 +56,7 @@ export class Puzzle {
         public readonly width: number,
         cells: Array<Cell>
     ) {
-        this.grid = new Array(height * width);
+        this.grid = new Array<Cell>(height * width);
         this.fillGrid(cells);
         this.fillRegions(cells);
         this.checkRep();
@@ -136,7 +136,7 @@ export class Puzzle {
      * Must be a non-negative integer less than this.height
      * @returns the number of stars in the row-th row
      */
-    public starsInRow(row: number): number {
+    private starsInRow(row: number): number {
         // Get the indexes of the row to tally up
         const startIndex = this.width * row;
         const endIndex = this.width * (row + 1);
@@ -162,10 +162,10 @@ export class Puzzle {
      * Must be a non-negative integer less than this.width
      * @returns the number of stars in the col-th column
      */
-    public starsInColumn(col: number): number {
+    private starsInColumn(col: number): number {
         // Get the indexes of the column to tally up
         const startIndex = col;
-        const endIndex = this.width * this.height
+        const endIndex = this.width * this.height;
 
         let total = 0;
         // Go over all the cells in the column
@@ -189,7 +189,7 @@ export class Puzzle {
      * @returns the number of stars in the region containing
      * cell at position (seedRow, seedCol)
      */
-    public starsInRegion(regionId: number): number {
+    private starsInRegion(regionId: number): number {
         // Get all the cells in the region
         const cellsInRegion: Array<Cell> = this.regions.get(regionId) ?? assert.fail("Invalid region ID");
 
@@ -223,7 +223,7 @@ export class Puzzle {
             }
         }
         // No stars found in the 3x3 region
-        return false
+        return false;
     }
 
     /**
@@ -235,7 +235,7 @@ export class Puzzle {
      * @param col the column index of the cell to change.
      * Must be a non-negative integer less than this.width
      * @param newState the new state of the changed cell
-     * @returns 
+     * @returns a new puzzle iwth the changed cell
      */
     private changeCellState(row: number, col: number, newState: CellState): Puzzle {
         // Check if the coordinates are out of bounds
@@ -248,7 +248,7 @@ export class Puzzle {
             col: chosenCell.col,             // col same as the old cell
             regionId: chosenCell.regionId,   // regionId same as the old cell
             state: newState,                 // SET STATE TO DESIRED STATE
-        }
+        };
 
         // Finally, create a new puzzle with the new cell by copying over the cell grid
         const newCells: Array<Cell> = [...this.grid];
@@ -286,7 +286,7 @@ export class Puzzle {
         return [
             Math.floor(index / this.width),
             index % this.width
-        ]
+        ];
 
     }
 
@@ -356,7 +356,7 @@ export class Puzzle {
      * @param col the column index of the row to check.
      * Must be a non-negative integer less than this.width
      * 
-     * @returs the true if the state of cell (row, col) is empty,
+     * @returns the true if the state of cell (row, col) is empty,
      * false otherwise
      */
     public isEmptyAt(row: number, col: number): boolean {
@@ -375,7 +375,7 @@ export class Puzzle {
      * @param col the column index of the row to check.
      * Must be a non-negative integer less than this.width
      * 
-     * @returs the true if the state of cell (row, col) is filled with a star,
+     * @returns the true if the state of cell (row, col) is filled with a star,
      * false otherwise
      */
     public hasStarAt(row: number, col: number): boolean {
@@ -394,7 +394,7 @@ export class Puzzle {
      * @param col the column index of the row to check.
      * Must be a non-negative integer less than this.width
      * 
-     * @returs the true if the state of cell (row, col) is empty,
+     * @returns the true if the state of cell (row, col) is empty,
      * false otherwise
      */
     public getCellAt(row: number, col: number): Cell {
@@ -459,7 +459,18 @@ export class Puzzle {
 
     }
 
+    /**
+     * Gets the grid of cells in the puzzle.
+     * 
+     * @returns a flattned array of cells representing the puzzle grid
+     */
+    public getGrid(): Array<Cell> {
+        return [...this.grid];
+    }
 
+    /**
+     * @inheritdoc
+     */
     public toString(): string {
 
         const showRegions = false;
@@ -476,7 +487,5 @@ export class Puzzle {
         }
         return str;
     }
-
-
 
 }
