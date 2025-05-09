@@ -42,8 +42,9 @@ describe('server', async function() {
  | 6,8  8,7  4,6 4,7 5,7 5,8 6,7 7,6 7,7 7,8 8,8
  | 7,3  7,5  6,3 7,4
  | 8,9 10,10 7,9 9,9 9,10
- | 9,3  10,6 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9`;
-
+ | 9,3  10,6 9,2 9,4 9,5 9,6 9,7 9,8 10,1 10,2 10,3 10,4 10,5 10,7 10,8 10,9
+`;
+    
     const puzzleFile2 = "kd-6-31-6";
     const expected2 = `10x10
  | 1,1  3,1  2,1
@@ -55,30 +56,34 @@ describe('server', async function() {
  | 7,4  8,2  7,3 8,3 8,4 9,2 10,2
  | 9,5  10,3 8,6 8,7 9,3 9,4 9,6 10,4 10,5
  | 7,7  8,9  7,8 8,8 9,8
- | 9,7  10,9 9,9 10,6 10,7 10,8`;
-
-    const badPuzzleFile = "kdot";
-
-    // try first puzzle and ensure it's blank
-    const fetchPuzzle1 = await sendRequest(puzzleFile1);
-    assert(fetchPuzzle1 === expected1, "Incorrect fetch data");
-
-    const fetchPuzzle2 = await sendRequest(puzzleFile2);
-    assert(fetchPuzzle2 === expected2, "Incorrect fetch data");
-
-    let breaker = true;
-    try{
-        await sendRequest(badPuzzleFile);
-        breaker = false;
-    } 
-    catch (err) {
-        assert(true);
-    }
-
-    assert(breaker, "Should have thrown error")
-
+ | 9,7  10,9 9,9 10,6 10,7 10,8
+`;
     
+    const badPuzzleFile = "kdot";
+    
+    it('covers requesting existing puzzle file', async function() { 
+        // try first puzzle and ensure it's blank
+        const fetchPuzzle1 = await sendRequest(puzzleFile1);
+        assert.strictEqual(fetchPuzzle1,expected1, "Incorrect fetch data");
+        
+        const fetchPuzzle2 = await sendRequest(puzzleFile2);
+        assert.strictEqual(fetchPuzzle2, expected2, "Incorrect fetch data");
+    });
+        
+        it('covers invalid puzzle file', async function() { 
+            let breaker = true;
+            try{
+                await sendRequest(badPuzzleFile);
+                breaker = false;
+            } 
+            catch (err) {
+                assert(true);
+            }
 
+            assert(breaker, "Should have thrown error")
+
+        
+});
     
     
 
