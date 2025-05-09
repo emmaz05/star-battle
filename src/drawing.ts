@@ -131,7 +131,7 @@ export function hueToRGB(hue: number): string {
 
     let r:number , g: number, b: number;
 
-    if (hue < HUE_SECTION)      [r, g, b] = [c, x, 0];
+    if (hue < HUE_SECTION)         [r, g, b] = [c, x, 0];
     else if (hue < 2 * HUE_SECTION)[r, g, b] = [x, c, 0];
     else if (hue < 3 * HUE_SECTION)[r, g, b] = [0, c, x];
     else if (hue < 4 * HUE_SECTION)[r, g, b] = [0, x, c];
