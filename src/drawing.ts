@@ -23,43 +23,6 @@ const regionColors = new Map<number, Color>();
 // ==========================================================================
 
 /**
- * Draw a black square filled with a random color.
- * 
- * Note: this function is designed to draw on a <canvas> element in the browser,
- *   but we can adjust its signature so that it can be tested with Mocha in Node.
- *   See "How to test: canvas drawing" on the *Testing* page of the project handout.
- * 
- * @param canvas canvas to draw on
- * @param x x position of center of box
- * @param y y position of center of box
- * @param color to fill box background
- */
-export function drawBox(canvas: HTMLCanvasElement, x: number, y: number, color: string): void {
-    const context = canvas.getContext('2d');
-    assert(context !== null, 'unable to get canvas drawing context');
-    if (context !== null) {
-    // save original context settings before we translate and change colors
-    context.save();
-
-    // translate the coordinate system of the drawing context:
-    //   the origin of `context` will now be (x,y)
-    context.translate(x, y);
-
-    // draw the outer outline box centered on the origin (which is now (x,y))
-    context.strokeStyle = 'black';
-    context.lineWidth = CELL_BORDER;
-    context.strokeRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-    // fill with a random semitransparent color
-    context.fillStyle = color;
-    context.fillRect(-BOX_SIZE/2, -BOX_SIZE/2, BOX_SIZE, BOX_SIZE);
-
-    // reset the origin and styles back to defaults
-    context.restore();
-    }
-}
-
-/**
  * Draw a circle at the specified canvas space x-y coordinates
  * 
  * @param canvas canvas to draw on
