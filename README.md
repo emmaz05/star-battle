@@ -73,7 +73,7 @@ npm run watch-client
 - Teammates: Diego Suarez and Samuel Manolis
 - Project concept and Star Battle puzzle design by Hans Eendebak (2003)
 - Web app examples and tutorials by Jim Bumgardner
-- Course materials and guidance from the MIT 6.172/6.031 staff
+- Course materials and guidance from the MIT 6.102 staff
 - TypeScript and Node.js ecosystem for development tools
 - ParserLib for puzzle parsing utilities
 
